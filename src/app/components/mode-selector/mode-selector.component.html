@@ -1,1 +1,30 @@
-<p>mode-selector works!</p>
+<div class="mode-selector">
+  <h2>Images per card</h2>
+
+  <label>
+    <input
+      type="radio"
+      name="mode"
+      [checked]="selected === 4"
+      (change)="selectMode(4)" />
+    4 symbols (13 images)
+  </label>
+
+  <label>
+    <input
+      type="radio"
+      name="mode"
+      [checked]="selected === 6"
+      (change)="selectMode(6)" />
+    6 symbols (31 images)
+  </label>
+
+  <label>
+    <input
+      type="radio"
+      name="mode"
+      [checked]="selected === 8"
+      (change)="selectMode(8)" />
+    8 symbols (57 images)
+  </label>
+</div>

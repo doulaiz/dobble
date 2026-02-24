@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+type Card = string[];
 
 @Component({
   selector: 'app-card-preview',
   standalone: true,
-  imports: [],
   templateUrl: './card-preview.component.html',
-  styleUrl: './card-preview.component.css'
+  styleUrls: ['./card-preview.component.scss'],
+   imports: [CommonModule]
 })
 export class CardPreviewComponent {
-
+  @Input() cards: Card[] = [];
 }

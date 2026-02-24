@@ -1,1 +1,15 @@
-<p>card-preview works!</p>
+<div class="card-preview">
+  <h2>Generated Cards</h2>
+
+  <div class="cards-grid" *ngIf="cards && cards.length">
+    <div class="card" *ngFor="let card of cards">
+      <div class="card-image" *ngFor="let img of card">
+        <img [src]="img" />
+      </div>
+    </div>
+  </div>
+
+  <p *ngIf="!cards || !cards.length">
+    No cards generated yet.
+  </p>
+</div>

@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-mode-selector',
   standalone: true,
-  imports: [],
   templateUrl: './mode-selector.component.html',
-  styleUrl: './mode-selector.component.css'
+  styleUrls: ['./mode-selector.component.scss']
 })
 export class ModeSelectorComponent {
+  @Output() modeChange = new EventEmitter<4 | 6 | 8>();
 
+  selected: 4 | 6 | 8 = 4;
+
+  selectMode(mode: 4 | 6 | 8) {
+    this.selected = mode;
+    this.modeChange.emit(mode);
+  }
 }

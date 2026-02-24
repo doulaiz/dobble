@@ -1,12 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+
+type Card = string[];
 
 @Component({
   selector: 'app-export-panel',
   standalone: true,
-  imports: [],
   templateUrl: './export-panel.component.html',
-  styleUrl: './export-panel.component.css'
+  styleUrls: ['./export-panel.component.scss']
 })
 export class ExportPanelComponent {
+  @Input() cards: Card[] = [];
 
+  exportPDF() {
+    // Placeholder: integrate jsPDF or pdf-lib here.
+    // For now, just log.
+    console.log('Exporting cards to PDF...', this.cards);
+    alert('PDF export not implemented yet, but wiring is ready.');
+  }
 }

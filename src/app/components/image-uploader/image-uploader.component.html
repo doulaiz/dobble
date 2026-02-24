@@ -1,1 +1,43 @@
-<p>image-uploader works!</p>
+<div class="image-uploader-container">
+
+  <!-- Upload Button -->
+  <input type="file" (change)="fileChangeEvent($event)" accept="image/*" />
+
+  <!-- Cropper -->
+  <div class="cropper-wrapper" *ngIf="imageChangedEvent">
+    <image-cropper
+      [imageChangedEvent]="imageChangedEvent"
+      [maintainAspectRatio]="true"
+      [aspectRatio]="1"
+      [resizeToWidth]="256"
+      [cropperMinWidth]="200"
+      [cropperMinHeight]="200"
+      [roundCropper]="true"
+      [imageQuality]="1"
+      [transform]="transform"
+      format="png"
+      (imageCropped)="imageCropped($event)"
+    >
+    </image-cropper>
+
+    <!-- Zoom Slider -->
+    <div class="zoom-control">
+      <label>Zoom</label>
+      <input
+        type="range"
+        min="1"
+        max="3"
+        step="0.1"
+        [(ngModel)]="scale"
+        (input)="zoomChange()"
+      />
+    </div>
+  </div>
+
+  <!-- Final Preview -->
+  <div class="preview" *ngIf="croppedImage">
+    <h4>Preview:</h4>
+    <img [src]="croppedImage" class="circle-preview" />
+  </div>
+
+</div>

@@ -15,8 +15,8 @@ import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-im
    ]
 })
 export class ImageUploaderComponent {
-   @Input() requiredImages = 0;
-   @Output() imagesReady = new EventEmitter<string[]>();
+   @Input() index: number = 0;
+   @Output() imageUploaded = new EventEmitter<{ index: number, image: string }>();
    imageChangedEvent: any = '';
    croppedImage: string = '';
    scale = 1;
@@ -31,6 +31,7 @@ export class ImageUploaderComponent {
 
    imageCropped(event: ImageCroppedEvent) {
       this.croppedImage = event.base64!;
+      this.imageUploaded.emit({ index: this.index, image: this.croppedImage });
    }
 
    zoomChange() {

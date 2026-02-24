@@ -7,14 +7,16 @@ import { ModeSelectorComponent } from './components/mode-selector/mode-selector.
 import { ImageUploaderComponent } from './components/image-uploader/image-uploader.component';
 import { CardPreviewComponent } from './components/card-preview/card-preview.component';
 import { ExportPanelComponent } from './components/export-panel/export-panel.component';
+import { ImagesWrapperComponent } from './components/images-wrapper/images-wrapper.component';
 
 @NgModule({
-   declarations: [   ],
+   declarations: [],
    imports: [
-      CardPreviewComponent, 
-      ExportPanelComponent, 
-      ModeSelectorComponent, 
+      CardPreviewComponent,
+      ExportPanelComponent,
+      ModeSelectorComponent,
       ImageUploaderComponent,
+      ImagesWrapperComponent,
       BrowserModule,
       FormsModule
    ],

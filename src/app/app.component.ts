@@ -13,9 +13,9 @@ type Card = string[];
    standalone: true,
    imports: [
       ModeSelectorComponent,
-      ImagesWrapperComponent,
       CardPreviewComponent,
       ExportPanelComponent,
+      ImagesWrapperComponent
    ],
 })
 export class AppComponent {

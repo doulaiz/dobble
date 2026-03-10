@@ -1,0 +1,9 @@
+<div class="images-wrapper-container">
+   <div *ngFor="let i of counter(requiredImages); let idx = index" class="uploader-instance">
+      <app-image-item [index]="idx" [imageState]="imageStates[idx]" (imageItemClick)="modal.doShowModal()">
+      </app-image-item>
+   </div>
+
+   <app-image-uploader-modal #modal [index]="selectedImageIndex" [imageState]="selectedImageIndex >= 0 ? imageStates[selectedImageIndex] : emptyImageState" (imageStateChange)="onModalImageStateChange($event)" (modalClosed)="onModalClosed()">
+   </app-image-uploader-modal>
+</div>

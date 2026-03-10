@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { ModeSelectorComponent } from './components/mode-selector/mode-selector.component';
-import { ImageUploaderComponent } from './components/image-uploader/image-uploader.component';
+import { ImageItemComponent } from './components/image-item/image-item.component';
 import { CardPreviewComponent } from './components/card-preview/card-preview.component';
 import { ExportPanelComponent } from './components/export-panel/export-panel.component';
 import { ImagesWrapperComponent } from './components/images-wrapper/images-wrapper.component';
@@ -15,7 +15,7 @@ import { ImagesWrapperComponent } from './components/images-wrapper/images-wrapp
       CardPreviewComponent,
       ExportPanelComponent,
       ModeSelectorComponent,
-      ImageUploaderComponent,
+      ImageItemComponent,
       ImagesWrapperComponent,
       BrowserModule,
       FormsModule

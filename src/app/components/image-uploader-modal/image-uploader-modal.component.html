@@ -1,37 +1,40 @@
-<div class="modal" *ngIf="showModal">
-   <div class="modal-content">
-      <div class="modal-body">
-         <!-- Image Display Area with Circle Overlay -->
-         <div class="image-display-area">
-            <img *ngIf="uploadedImage" [src]="uploadedImage" class="modal-image" />
-            <div class="circle-overlay"></div>
+<div class="modal-overlay" *ngIf="showModal">
+
+   <div class="modal">
+      <div class="modal-content">
+         <div class="modal-body">
+            <!-- Image Display Area with Circle Overlay -->
+            <div class="image-display-area">
+               <img *ngIf="uploadedImage" [src]="uploadedImage" class="modal-image" />
+               <div class="circle-overlay"></div>
+            </div>
+
+            <!-- Controls Sidebar -->
+            <div class="controls-sidebar">
+               <!-- Zoom Slider -->
+               <div class="control-group">
+                  <label>Zoom</label>
+                  <input type="range" min="1" max="3" step="0.1" (input)="onZoomChange()" />
+               </div>
+
+               <!-- Straighten Slider -->
+               <div class="control-group">
+                  <label>Straighten</label>
+                  <input type="range" min="-45" max="45" step="1" (input)="onRotationChange()" />
+               </div>
+            </div>
          </div>
 
-         <!-- Controls Sidebar -->
-         <div class="controls-sidebar">
-            <!-- Zoom Slider -->
-            <div class="control-group">
-               <label>Zoom</label>
-               <input type="range" min="1" max="3" step="0.1" (input)="onZoomChange()" />
-            </div>
-
-            <!-- Straighten Slider -->
-            <div class="control-group">
-               <label>Straighten</label>
-               <input type="range" min="-45" max="45" step="1"   (input)="onRotationChange()" />
-            </div>
+         <!-- Modal Buttons -->
+         <div class="modal-footer">
+            <button class="btn btn-browse" (click)="openFileBrowser()">Browse</button>
+            <button class="btn btn-ok" (click)="confirmImage()">OK</button>
+            <button class="btn btn-cancel" (click)="cancelModal()">Cancel</button>
          </div>
       </div>
 
-      <!-- Modal Buttons -->
-      <div class="modal-footer">
-         <button class="btn btn-browse" (click)="openFileBrowser()">Browse</button>
-         <button class="btn btn-ok" (click)="confirmImage()">OK</button>
-         <button class="btn btn-cancel" (click)="cancelModal()">Cancel</button>
-      </div>
+      <!-- Hidden File Input -->
+      <input #fileBrowser type="file" accept="image/*" style="display: none" (change)="onFileSelected($event)" />
+
    </div>
-
-   <!-- Hidden File Input -->
-   <input #fileBrowser type="file" accept="image/*" style="display: none" (change)="onFileSelected($event)" />
-
 </div>

@@ -12,7 +12,7 @@ import { NgIf } from '@angular/common';
    styleUrl: './image-uploader-modal.component.css'
 })
 export class ImageUploaderModalComponent {
-   @Input() showModal: boolean = false;
+    showModal: boolean = false;
    @Input() index: number = 0;
    @Input() imageState: ImageState = new ImageState();
    @Output() imageStateChange = new EventEmitter<{ index: number; imageState: ImageState }>();
@@ -46,17 +46,18 @@ export class ImageUploaderModalComponent {
    }
 
    doShowModal() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = (e: any) => {
-         this.fileChangeEvent(e);
-      };
-      input.click();
+      this.showModal = true;
+
    }
    cancelModal() {
+      this.showModal = false;
       this.imageChangedEvent = '';
       this.croppedImage = '';
+   }
+
+   onClose() {
+      this.cancelModal();
+      this.modalClosed.emit();
    }
 
    onZoomChange() {

@@ -9,27 +9,23 @@
                <div class="circle-overlay"></div>
             </div>
 
-            <!-- Controls Sidebar -->
-            <div class="controls-sidebar">
+            <div class="modal-controls-sidebar">
                <!-- Zoom Slider -->
-               <div class="control-group">
+               <div class="control-group modal-control">
                   <label>Zoom</label>
                   <input type="range" min="1" max="3" step="0.1" (input)="onZoomChange()" />
                </div>
 
-               <!-- Straighten Slider -->
                <div class="control-group">
                   <label>Straighten</label>
                   <input type="range" min="-45" max="45" step="1" (input)="onRotationChange()" />
                </div>
+               <div class="modal-buttons">
+                  <button class="btn btn-browse" (click)="openFileBrowser()">Browse</button>
+                  <button class="btn btn-ok" (click)="confirmImage()">OK</button>
+                  <button class="btn btn-cancel" (click)="cancelModal()">Cancel</button>
+               </div>
             </div>
-         </div>
-
-         <!-- Modal Buttons -->
-         <div class="modal-footer">
-            <button class="btn btn-browse" (click)="openFileBrowser()">Browse</button>
-            <button class="btn btn-ok" (click)="confirmImage()">OK</button>
-            <button class="btn btn-cancel" (click)="cancelModal()">Cancel</button>
          </div>
       </div>
 

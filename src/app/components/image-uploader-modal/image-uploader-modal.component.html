@@ -22,6 +22,7 @@
           [hideResizeSquares]="true"
           format="png"
           (imageCropped)="imageCropped($event)"
+          (transformChange)="onTransformChange($event)"
         ></image-cropper>
         <div *ngIf="!imageChangedEvent" class="image-placeholder">
           <div class="placeholder-content">
@@ -50,11 +51,11 @@
 
         <div class="control-group">
           <label class="control-label">
-            <span>Straighten</span>
+            <span>Rotate</span>
             <span class="control-value">{{ rotation }}°</span>
           </label>
           <input
-            type="range" min="-45" max="45" step="1"
+            type="range" min="-180" max="180" step="1"
             [value]="rotation"
             (input)="rotation = +$any($event.target).value; onRotationChange()"
             class="slider"

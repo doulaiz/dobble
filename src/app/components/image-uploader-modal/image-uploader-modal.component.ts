@@ -68,10 +68,20 @@ export class ImageUploaderModalComponent {
       };
    }
 
+   onTransformChange(t: ImageTransform) {
+      this.transform = t;
+   }
+
    onRotationChange() {
+      const oldRotation = this.transform.rotate ?? 0;
+      const dRad = (this.rotation - oldRotation) * Math.PI / 180;
+      const tx = this.transform.translateH ?? 0;
+      const ty = this.transform.translateV ?? 0;
       this.transform = {
          ...this.transform,
-         rotate: this.rotation
+         rotate: this.rotation,
+         translateH: tx * Math.cos(dRad) - ty * Math.sin(dRad),
+         translateV: tx * Math.sin(dRad) + ty * Math.cos(dRad)
       };
    }
    openFileBrowser() {

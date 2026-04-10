@@ -96,6 +96,12 @@ image-cropper {
   max-height: 100%;
 }
 
+/* Prevent the cropper frame from capturing mouse events so that clicks
+   anywhere (inside or outside the circle) pan the image instead. */
+image-cropper ::ng-deep .ngx-ic-cropper {
+  pointer-events: none;
+}
+
 /* ── Placeholder (no image yet) ──────────────────────────── */
 .image-placeholder {
   display: flex;

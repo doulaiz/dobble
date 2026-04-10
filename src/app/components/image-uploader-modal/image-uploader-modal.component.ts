@@ -26,7 +26,8 @@ export class ImageUploaderModalComponent {
    rotation = 0;
 
    transform: ImageTransform = {
-      scale: 1
+      scale: 1,
+      translateUnit: 'px'
    };
 
    fileChangeEvent(event: any): void {

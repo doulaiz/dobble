@@ -18,6 +18,8 @@
           [maintainAspectRatio]="true"
           [aspectRatio]="1"
           [roundCropper]="true"
+          [allowMoveImage]="true"
+          [hideResizeSquares]="true"
           format="png"
           (imageCropped)="imageCropped($event)"
         ></image-cropper>
@@ -39,7 +41,7 @@
             <span class="control-value">{{ zoom.toFixed(1) }}×</span>
           </label>
           <input
-            type="range" min="1" max="3" step="0.1"
+            type="range" min="1" max="5" step="0.1"
             [value]="zoom"
             (input)="zoom = +$any($event.target).value; onZoomChange()"
             class="slider"

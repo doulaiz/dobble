@@ -1,36 +1,77 @@
 <div class="modal-overlay" *ngIf="showModal">
+  <div class="modal">
 
-   <div class="modal">
-      <div class="modal-content">
-         <div class="modal-body">
-            <!-- Image Display Area with Circle Overlay -->
-            <div class="image-display-area">
-               <img *ngIf="uploadedImage" [src]="uploadedImage" class="modal-image" />
-               <div class="circle-overlay"></div>
-            </div>
+    <!-- Header -->
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Image</h2>
+      <button class="btn-close" (click)="cancelModal()">✕</button>
+    </div>
 
-            <div class="modal-controls-sidebar">
-               <!-- Zoom Slider -->
-               <div class="control-group modal-control">
-                  <label>Zoom</label>
-                  <input type="range" min="1" max="3" step="0.1" (input)="onZoomChange()" />
-               </div>
+    <div class="modal-body">
 
-               <div class="control-group">
-                  <label>Straighten</label>
-                  <input type="range" min="-45" max="45" step="1" (input)="onRotationChange()" />
-               </div>
-               <div class="modal-buttons">
-                  <button class="btn btn-browse" (click)="openFileBrowser()">Browse</button>
-                  <button class="btn btn-ok" (click)="confirmImage()">OK</button>
-                  <button class="btn btn-cancel" (click)="cancelModal()">Cancel</button>
-               </div>
-            </div>
-         </div>
+      <!-- Image / Cropper Area -->
+      <div class="image-display-area">
+        <image-cropper
+          *ngIf="imageChangedEvent"
+          [imageChangedEvent]="imageChangedEvent"
+          [transform]="transform"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="1"
+          [roundCropper]="true"
+          format="png"
+          (imageCropped)="imageCropped($event)"
+        ></image-cropper>
+        <div *ngIf="!imageChangedEvent" class="image-placeholder">
+          <div class="placeholder-content">
+            <div class="placeholder-icon">↑</div>
+            <p>No image selected</p>
+            <button class="btn btn-browse" (click)="openFileBrowser()">Browse image</button>
+          </div>
+        </div>
       </div>
 
-      <!-- Hidden File Input -->
-      <input #fileBrowser type="file" accept="image/*" style="display: none" (change)="onFileSelected($event)" />
+      <!-- Controls Sidebar -->
+      <div class="modal-controls-sidebar">
 
-   </div>
+        <div class="control-group">
+          <label class="control-label">
+            <span>Zoom</span>
+            <span class="control-value">{{ zoom.toFixed(1) }}×</span>
+          </label>
+          <input
+            type="range" min="1" max="3" step="0.1"
+            [value]="zoom"
+            (input)="zoom = +$any($event.target).value; onZoomChange()"
+            class="slider"
+          />
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>Straighten</span>
+            <span class="control-value">{{ rotation }}°</span>
+          </label>
+          <input
+            type="range" min="-45" max="45" step="1"
+            [value]="rotation"
+            (input)="rotation = +$any($event.target).value; onRotationChange()"
+            class="slider"
+          />
+        </div>
+
+        <div class="modal-buttons">
+          <button class="btn btn-browse" (click)="openFileBrowser()">Browse</button>
+          <div class="action-buttons">
+            <button class="btn btn-cancel" (click)="cancelModal()">Cancel</button>
+            <button class="btn btn-ok" (click)="confirmImage()">OK</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Hidden File Input -->
+  <input #fileBrowser type="file" accept="image/*" style="display: none" (change)="onFileSelected($event)" />
 </div>

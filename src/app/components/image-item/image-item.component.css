@@ -28,3 +28,17 @@ image-cropper {
    object-fit: cover;
    border: 3px solid #0a66c2;
 }
+
+.no-image {
+   width: 150px;
+   height: 150px;
+   border-radius: 50%;
+   border: 3px dashed #ccc;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 2rem;
+   color: #ccc;
+   cursor: pointer;
+   margin: auto;
+}

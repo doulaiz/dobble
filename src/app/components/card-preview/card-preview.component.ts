@@ -7,7 +7,7 @@ type Card = string[];
   selector: 'app-card-preview',
   standalone: true,
   templateUrl: './card-preview.component.html',
-  styleUrls: ['./card-preview.component.scss'],
+  styleUrls: ['./card-preview.component.css'],
    imports: [CommonModule]
 })
 export class CardPreviewComponent {

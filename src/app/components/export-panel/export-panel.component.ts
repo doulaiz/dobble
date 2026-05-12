@@ -6,7 +6,7 @@ type Card = string[];
   selector: 'app-export-panel',
   standalone: true,
   templateUrl: './export-panel.component.html',
-  styleUrls: ['./export-panel.component.scss']
+  styleUrls: ['./export-panel.component.css']
 })
 export class ExportPanelComponent {
   @Input() cards: Card[] = [];

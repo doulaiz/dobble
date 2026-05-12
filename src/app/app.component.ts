@@ -9,7 +9,7 @@ type Card = string[];
 @Component({
    selector: 'app-root',
    templateUrl: './app.component.html',
-   styleUrls: ['./app.component.scss'],
+   styleUrls: ['./app.component.css'],
    standalone: true,
    imports: [
       ModeSelectorComponent,
@@ -26,6 +26,7 @@ export class AppComponent {
    cards: Card[] = [];
 
    onModeChange(mode: 4 | 6 | 8) {
+      console.log('Mode changed to:', mode);
       this.mode = mode;
       this.requiredImages = mode === 4 ? 13 : mode === 6 ? 31 : 57;
       this.imagesReady = false;

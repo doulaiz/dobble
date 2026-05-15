@@ -2,6 +2,7 @@
 
   <!-- Mode Selector -->
   <app-mode-selector
+    [initialMode]="mode"
     (modeChange)="onModeChange($event)">
   </app-mode-selector>
 
@@ -10,7 +11,9 @@
   <!-- Image Upload & Editing -->
   <app-images-wrapper
     [requiredImages]="requiredImages"
-    (imagesReady)="onImagesReady($event)">
+    [initialImageStates]="savedImageStates"
+    (imagesReady)="onImagesReady($event)"
+    (imageStatesChange)="onImageStatesChange($event)">
   </app-images-wrapper>
 
   <hr />

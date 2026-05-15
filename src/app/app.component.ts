@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CardPreviewComponent } from './components/card-preview/card-preview.component';
 import { ExportPanelComponent } from './components/export-panel/export-panel.component';
 import { ModeSelectorComponent } from './components/mode-selector/mode-selector.component';
 import { ImagesWrapperComponent } from './components/images-wrapper/images-wrapper.component';
+import { PersistenceService } from './services/persistence.service';
+import { ImageState } from './classes/image-state';
 
 type Card = string[];
 
@@ -18,26 +20,55 @@ type Card = string[];
       ImagesWrapperComponent
    ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
    mode: 4 | 6 | 8 = 4;
    requiredImages = 13;
    imagesReady = false;
    images: string[] = [];
    cards: Card[] = [];
+   savedImageStates: ImageState[] = [];
+
+   constructor(private persistence: PersistenceService) {}
+
+   ngOnInit(): void {
+      const saved = this.persistence.load();
+      if (saved) {
+         this.mode = saved.mode;
+         this.requiredImages = saved.mode === 4 ? 13 : saved.mode === 6 ? 31 : 57;
+         this.savedImageStates = saved.imageStates ?? [];
+         this.cards = saved.cards ?? [];
+
+         const allImages = this.savedImageStates.map(s => s.croppedImage || s.image);
+         if (
+            this.savedImageStates.length === this.requiredImages &&
+            allImages.every(img => img)
+         ) {
+            this.images = allImages;
+            this.imagesReady = true;
+         }
+      }
+   }
 
    onModeChange(mode: 4 | 6 | 8) {
-      console.log('Mode changed to:', mode);
       this.mode = mode;
       this.requiredImages = mode === 4 ? 13 : mode === 6 ? 31 : 57;
       this.imagesReady = false;
       this.images = [];
       this.cards = [];
+      this.savedImageStates = [];
+      this.persistence.save({ mode, imageStates: [], cards: [] });
    }
 
    onImagesReady(images: string[]) {
       this.images = images;
       this.imagesReady = images.length === this.requiredImages;
       this.cards = [];
+      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards: [] });
+   }
+
+   onImageStatesChange(imageStates: ImageState[]) {
+      this.savedImageStates = imageStates;
+      this.persistence.save({ mode: this.mode, imageStates, cards: this.cards });
    }
 
    generateCards() {
@@ -59,6 +90,7 @@ export class AppComponent {
       }
 
       this.cards = cards;
+      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards });
    }
 
    private randomCard(images: string[], perCard: number): Card {

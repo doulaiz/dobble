@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-mode-selector',
@@ -7,6 +7,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./mode-selector.component.css']
 })
 export class ModeSelectorComponent {
+  @Input() set initialMode(mode: 4 | 6 | 8) { this.selected = mode; }
   @Output() modeChange = new EventEmitter<4 | 6 | 8>();
 
   selected: 4 | 6 | 8 = 4;

@@ -8,6 +8,22 @@
 
   <hr />
 
+  <!-- Image Section Header -->
+  <div class="images-section-header">
+    <span class="images-section-title">Images</span>
+    @if (!showResetConfirm) {
+      <button class="btn-reset-trigger" (click)="showResetConfirm = true">
+        Start from scratch
+      </button>
+    } @else {
+      <div class="reset-confirm">
+        <span>Delete all images?</span>
+        <button class="btn-confirm-yes" (click)="resetAll()">Yes, delete</button>
+        <button class="btn-confirm-no" (click)="showResetConfirm = false">Cancel</button>
+      </div>
+    }
+  </div>
+
   <!-- Image Upload & Editing -->
   <app-images-wrapper
     [requiredImages]="requiredImages"

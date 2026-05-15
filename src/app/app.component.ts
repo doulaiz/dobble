@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
    images: string[] = [];
    cards: Card[] = [];
    savedImageStates: ImageState[] = [];
+   showResetConfirm = false;
 
    constructor(private persistence: PersistenceService) {}
 
@@ -47,6 +48,15 @@ export class AppComponent implements OnInit {
             this.imagesReady = true;
          }
       }
+   }
+
+   resetAll() {
+      this.savedImageStates = [];
+      this.imagesReady = false;
+      this.images = [];
+      this.cards = [];
+      this.showResetConfirm = false;
+      this.persistence.save({ mode: this.mode, imageStates: [], cards: [] });
    }
 
    onModeChange(mode: 4 | 6 | 8) {

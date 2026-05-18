@@ -1,20 +1,18 @@
-<div class="card-preview">
-  <h2>Generated Cards</h2>
-
-  <div class="cards-grid" *ngIf="cards && cards.length">
-    <div class="card"
-      *ngFor="let card of cards"
-      [style.background-image]="cardBgStyle"
-      [style.background-size]="'cover'"
-      [style.background-position]="'center'"
-      [style.padding]="cardLayout.marginTop + 'px ' + cardLayout.marginLeft + 'px'">
-      <div class="card-image" *ngFor="let img of card">
-        <img [src]="img" />
-      </div>
+@if (cards && cards.length) {
+  <div class="card-preview">
+    <h2>Generated Cards</h2>
+    <div class="cards-grid">
+      @for (card of cards; track $index) {
+        <div class="card" [ngStyle]="cardStyle">
+          <div class="card-images" [ngStyle]="imageGridStyle">
+            @for (img of card; track $index) {
+              <img class="card-img" [src]="img" />
+            }
+          </div>
+        </div>
+      }
     </div>
   </div>
-
-  <p *ngIf="!cards || !cards.length">
-    No cards generated yet.
-  </p>
-</div>
+} @else {
+  <p class="no-cards">No cards generated yet.</p>
+}

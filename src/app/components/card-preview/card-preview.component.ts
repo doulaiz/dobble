@@ -15,7 +15,45 @@ export class CardPreviewComponent {
   @Input() cards: Card[] = [];
   @Input() cardLayout: CardLayout = new CardLayout();
 
-  get cardBgStyle(): string {
-    return this.cardLayout.backgroundImage ? `url(${this.cardLayout.backgroundImage})` : '';
+  private readonly MM_TO_PX = 3.7795;
+  private mm(v: number): number { return Math.round(v * this.MM_TO_PX); }
+
+  get cardWidthPx(): number { return this.mm(this.cardLayout.width); }
+  get cardHeightPx(): number { return this.mm(this.cardLayout.height); }
+  get paddingVPx(): number { return this.mm(this.cardLayout.marginTop); }
+  get paddingHPx(): number { return this.mm(this.cardLayout.marginLeft); }
+  get contentWidthPx(): number { return this.cardWidthPx - 2 * this.paddingHPx; }
+  get contentHeightPx(): number { return this.cardHeightPx - 2 * this.paddingVPx; }
+
+  get imagesPerCard(): number { return this.cards[0]?.length || 4; }
+  get gridCols(): number { return Math.ceil(Math.sqrt(this.imagesPerCard)); }
+  get gridRows(): number { return Math.ceil(this.imagesPerCard / this.gridCols); }
+
+  get imageSizePx(): number {
+    const gap = 4;
+    const byW = (this.contentWidthPx - (this.gridCols - 1) * gap) / this.gridCols;
+    const byH = (this.contentHeightPx - (this.gridRows - 1) * gap) / this.gridRows;
+    return Math.floor(Math.min(byW, byH));
+  }
+
+  get cardStyle(): Record<string, string> {
+    const base: Record<string, string> = {
+      width: `${this.cardWidthPx}px`,
+      height: `${this.cardHeightPx}px`,
+      padding: `${this.paddingVPx}px ${this.paddingHPx}px`,
+    };
+    if (this.cardLayout.backgroundImage) {
+      base['backgroundImage'] = `url(${this.cardLayout.backgroundImage})`;
+      base['backgroundSize'] = 'cover';
+      base['backgroundPosition'] = 'center';
+    }
+    return base;
+  }
+
+  get imageGridStyle(): Record<string, string> {
+    return {
+      'grid-template-columns': `repeat(${this.gridCols}, ${this.imageSizePx}px)`,
+      'grid-auto-rows': `${this.imageSizePx}px`,
+    };
   }
 }

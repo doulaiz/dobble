@@ -24,6 +24,7 @@
               format="png"
               output="base64"
               (imageCropped)="imageCropped($event)"
+              (cropperReady)="onCropperReady()"
               (transformChange)="onTransformChange($event)"
             ></image-cropper>
           } @else {

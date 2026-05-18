@@ -1,0 +1,90 @@
+<div class="layout-settings">
+
+  <button class="btn-layout-toggle" (click)="showPanel = !showPanel" title="Card layout settings">
+    ⚙
+  </button>
+
+  @if (showPanel) {
+    <div class="settings-panel">
+
+      <!-- Form -->
+      <div class="settings-form">
+
+        <div class="field-row">
+          <label class="field-label">Width</label>
+          <div class="input-unit">
+            <input type="number" min="10" max="500" class="field-input"
+              [value]="layout.width"
+              (input)="update('width', +$any($event.target).value)" />
+            <span class="unit">mm</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field-label">Height</label>
+          <div class="input-unit">
+            <input type="number" min="10" max="500" class="field-input"
+              [value]="layout.height"
+              (input)="update('height', +$any($event.target).value)" />
+            <span class="unit">mm</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field-label">Margin top</label>
+          <div class="input-unit">
+            <input type="number" min="0" max="100" class="field-input"
+              [value]="layout.marginTop"
+              (input)="update('marginTop', +$any($event.target).value)" />
+            <span class="unit">mm</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field-label">Margin left</label>
+          <div class="input-unit">
+            <input type="number" min="0" max="100" class="field-input"
+              [value]="layout.marginLeft"
+              (input)="update('marginLeft', +$any($event.target).value)" />
+            <span class="unit">mm</span>
+          </div>
+        </div>
+
+        <div class="field-row field-row--bg">
+          <label class="field-label">Background</label>
+          <div class="bg-controls">
+            <button class="btn-browse-bg" (click)="browseBackground()">Browse PNG</button>
+            @if (layout.backgroundImage) {
+              <button class="btn-clear-bg" (click)="clearBackground()">✕ Remove</button>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Preview -->
+      <div class="settings-preview">
+        <div class="preview-label-top">Preview</div>
+        <div class="preview-card"
+          [style.width.px]="previewCardWidth"
+          [style.height.px]="previewCardHeight"
+          [style.background-image]="previewBgStyle"
+          [style.background-size]="'cover'"
+          [style.background-position]="'center'">
+          <div class="preview-margin-area"
+            [style.top.px]="previewMarginTop"
+            [style.left.px]="previewMarginLeft"
+            [style.right.px]="previewMarginLeft"
+            [style.bottom.px]="previewMarginTop">
+            @for (i of previewPlaceholders; track i) {
+              <div class="preview-circle"></div>
+            }
+          </div>
+        </div>
+        <div class="preview-dims">{{ layout.width }} × {{ layout.height }} mm</div>
+      </div>
+
+    </div>
+  }
+
+</div>

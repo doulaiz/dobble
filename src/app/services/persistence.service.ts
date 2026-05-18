@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ImageState } from '../classes/image-state';
+import { CardLayout } from '../classes/card-layout';
 
 type Mode = 4 | 6 | 8;
 
@@ -7,6 +8,7 @@ interface PersistedState {
   mode: Mode;
   imageStates: ImageState[];
   cards: string[][];
+  cardLayout?: CardLayout;
 }
 
 const STORAGE_KEY = 'dobble_state';

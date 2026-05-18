@@ -34,7 +34,7 @@
 
   <hr />
 
-  <!-- Generate Cards Button -->
+  <!-- Generate Cards -->
   <div class="generate-section">
     <button
       class="btn-generate"
@@ -42,13 +42,20 @@
       (click)="generateCards()">
       Generate 20 Cards
     </button>
+    <div class="layout-settings-anchor">
+      <app-card-layout-settings
+        [layout]="cardLayout"
+        (layoutChange)="onLayoutChange($event)">
+      </app-card-layout-settings>
+    </div>
   </div>
 
   <hr />
 
   <!-- Card Preview -->
   <app-card-preview
-    [cards]="cards">
+    [cards]="cards"
+    [cardLayout]="cardLayout">
   </app-card-preview>
 
   <hr />

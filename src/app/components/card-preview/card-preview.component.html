@@ -2,7 +2,12 @@
   <h2>Generated Cards</h2>
 
   <div class="cards-grid" *ngIf="cards && cards.length">
-    <div class="card" *ngFor="let card of cards">
+    <div class="card"
+      *ngFor="let card of cards"
+      [style.background-image]="cardBgStyle"
+      [style.background-size]="'cover'"
+      [style.background-position]="'center'"
+      [style.padding]="cardLayout.marginTop + 'px ' + cardLayout.marginLeft + 'px'">
       <div class="card-image" *ngFor="let img of card">
         <img [src]="img" />
       </div>

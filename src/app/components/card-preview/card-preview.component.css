@@ -27,14 +27,15 @@ h2 {
   justify-content: center;
 }
 
-.card-images {
-  display: grid;
-  gap: 4px;
+/* Absolute-positioning root for packed images */
+.card-content {
+  position: relative;
+  flex-shrink: 0;
 }
 
-/* Circular clip container — isolates each image's overflow so
-   a scaled-up image doesn't bleed into its neighbours. */
+/* Each image occupies an absolutely positioned circular slot */
 .card-img-wrapper {
+  position: absolute;
   border-radius: 50%;
   overflow: hidden;
 }

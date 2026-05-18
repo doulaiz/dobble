@@ -32,12 +32,19 @@ h2 {
   gap: 4px;
 }
 
+/* Circular clip container — isolates each image's overflow so
+   a scaled-up image doesn't bleed into its neighbours. */
+.card-img-wrapper {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
 .card-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
   display: block;
+  transform-origin: center;
 }
 
 .no-cards {

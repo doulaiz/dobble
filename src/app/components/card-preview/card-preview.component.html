@@ -2,11 +2,13 @@
   <div class="card-preview">
     <h2>Generated Cards</h2>
     <div class="cards-grid">
-      @for (card of cards; track $index) {
+      @for (card of cards; track $index; let ci = $index) {
         <div class="card" [ngStyle]="cardStyle">
           <div class="card-images" [ngStyle]="imageGridStyle">
-            @for (img of card; track $index) {
-              <img class="card-img" [src]="img" />
+            @for (img of card; track $index; let ii = $index) {
+              <div class="card-img-wrapper">
+                <img class="card-img" [src]="img" [ngStyle]="imageTransforms[ci]?.[ii]" />
+              </div>
             }
           </div>
         </div>

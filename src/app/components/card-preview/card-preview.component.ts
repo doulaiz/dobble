@@ -12,7 +12,21 @@ type Card = string[];
   imports: [CommonModule]
 })
 export class CardPreviewComponent {
-  @Input() cards: Card[] = [];
+  private _cards: Card[] = [];
+  imageTransforms: { transform: string }[][] = [];
+
+  @Input() set cards(value: Card[]) {
+    this._cards = value;
+    this.imageTransforms = value.map(card =>
+      card.map(() => {
+        const rotate = Math.floor(Math.random() * 360);
+        const scale = +(0.7 + Math.random() * 0.6).toFixed(3);
+        return { transform: `rotate(${rotate}deg) scale(${scale})` };
+      })
+    );
+  }
+  get cards(): Card[] { return this._cards; }
+
   @Input() cardLayout: CardLayout = new CardLayout();
 
   private readonly MM_TO_PX = 3.7795;
@@ -25,7 +39,7 @@ export class CardPreviewComponent {
   get contentWidthPx(): number { return this.cardWidthPx - 2 * this.paddingHPx; }
   get contentHeightPx(): number { return this.cardHeightPx - 2 * this.paddingVPx; }
 
-  get imagesPerCard(): number { return this.cards[0]?.length || 4; }
+  get imagesPerCard(): number { return this._cards[0]?.length || 4; }
   get gridCols(): number { return Math.ceil(Math.sqrt(this.imagesPerCard)); }
   get gridRows(): number { return Math.ceil(this.imagesPerCard / this.gridCols); }
 

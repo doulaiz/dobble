@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { ImageState } from '../../classes/image-state';
 
@@ -23,7 +23,7 @@ export class ImageUploaderModalComponent implements OnChanges {
 
    transform: ImageTransform = { scale: 1, translateUnit: 'px' };
 
-   constructor(private cdr: ChangeDetectorRef) {}
+   constructor(private cdr: ChangeDetectorRef, private ngZone: NgZone) {}
 
    ngOnChanges(changes: SimpleChanges): void {
       if (changes['imageState'] && this.showModal) {
@@ -45,11 +45,10 @@ export class ImageUploaderModalComponent implements OnChanges {
       this.croppedImage = event.base64!;
    }
 
-   // After the image loads inside the OnPush cropper, imageVisible is set to true but CD
-   // hasn't run yet to reflect it. Nudge the transform (new reference dirtying the OnPush
-   // input) then call detectChanges() synchronously — zone-independent, always works.
    onCropperReady() {
-      setTimeout(() => {
+      // cropperReady fires via Angular output() API which can run outside zone.
+      // ngZone.run() re-enters the zone so the tick() propagates CD into the OnPush cropper.
+      this.ngZone.run(() => {
          this.transform = { ...this.transform };
          this.cdr.detectChanges();
       });
@@ -101,14 +100,17 @@ export class ImageUploaderModalComponent implements OnChanges {
          const file = e.target.files?.[0];
          if (!file) return;
          const reader = new FileReader();
-         // FileReader.onload fires outside Angular's zone. detectChanges() is zone-independent
-         // and forces the @if(imageBase64) block to re-render immediately.
          reader.onload = (ev: any) => {
-            this.imageBase64 = ev.target.result;
-            this.zoom = 1;
-            this.rotation = 0;
-            this.transform = { scale: 1, translateUnit: 'px' };
-            this.cdr.detectChanges();
+            // FileReader.onload fires outside Angular's zone. ngZone.run() re-enters the zone
+            // so the cropper's internal debounced setTimeout also runs within zone, ensuring
+            // its image-load callbacks trigger automatic CD rather than requiring a manual nudge.
+            this.ngZone.run(() => {
+               this.imageBase64 = ev.target.result;
+               this.zoom = 1;
+               this.rotation = 0;
+               this.transform = { scale: 1, translateUnit: 'px' };
+               this.cdr.detectChanges();
+            });
          };
          reader.readAsDataURL(file);
       };

@@ -56,7 +56,9 @@
   <!-- Card Preview -->
   <app-card-preview
     [cards]="cards"
-    [cardLayout]="cardLayout">
+    [restoredLayouts]="savedCardLayouts"
+    [cardLayout]="cardLayout"
+    (cardLayoutsChange)="onCardLayoutsChange($event)">
   </app-card-preview>
 
   <hr />

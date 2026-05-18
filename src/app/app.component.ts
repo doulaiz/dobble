@@ -7,6 +7,7 @@ import { CardLayoutSettingsComponent } from './components/card-layout-settings/c
 import { PersistenceService } from './services/persistence.service';
 import { ImageState } from './classes/image-state';
 import { CardLayout } from './classes/card-layout';
+import { ImgLayout } from './classes/img-layout';
 
 type Card = string[];
 
@@ -29,9 +30,11 @@ export class AppComponent implements OnInit {
    imagesReady = false;
    images: string[] = [];
    cards: Card[] = [];
+   savedCardLayouts: ImgLayout[][] = [];
    savedImageStates: ImageState[] = [];
    showResetConfirm = false;
    cardLayout: CardLayout = new CardLayout();
+   private imageChangedByUser = false;
 
    constructor(private persistence: PersistenceService) { }
 
@@ -41,6 +44,7 @@ export class AppComponent implements OnInit {
          this.mode = saved.mode;
          this.requiredImages = saved.mode === 4 ? 13 : saved.mode === 6 ? 31 : 57;
          this.savedImageStates = saved.imageStates ?? [];
+         this.savedCardLayouts = saved.cardLayouts ?? [];
          this.cards = saved.cards ?? [];
          this.cardLayout = saved.cardLayout ?? new CardLayout();
 
@@ -65,7 +69,7 @@ export class AppComponent implements OnInit {
          return { ...state, image: img, croppedImage: img, zoomLevel: 1, angleLevel: 0 };
       });
       this.savedImageStates = filled;
-      this.persistence.save({ mode: this.mode, imageStates: filled, cards: this.cards, cardLayout: this.cardLayout });
+      this.persistence.save({ mode: this.mode, imageStates: filled, cards: this.cards, cardLayout: this.cardLayout, cardLayouts: this.savedCardLayouts });
    }
 
    resetAll() {
@@ -73,8 +77,10 @@ export class AppComponent implements OnInit {
       this.imagesReady = false;
       this.images = [];
       this.cards = [];
+      this.savedCardLayouts = [];
+      this.imageChangedByUser = false;
       this.showResetConfirm = false;
-      this.persistence.save({ mode: this.mode, imageStates: [], cards: [], cardLayout: this.cardLayout });
+      this.persistence.save({ mode: this.mode, imageStates: [], cards: [], cardLayout: this.cardLayout, cardLayouts: [] });
    }
 
    onModeChange(mode: 4 | 6 | 8) {
@@ -83,25 +89,37 @@ export class AppComponent implements OnInit {
       this.imagesReady = false;
       this.images = [];
       this.cards = [];
+      this.savedCardLayouts = [];
       this.savedImageStates = [];
-      this.persistence.save({ mode, imageStates: [], cards: [], cardLayout: this.cardLayout });
+      this.imageChangedByUser = false;
+      this.persistence.save({ mode, imageStates: [], cards: [], cardLayout: this.cardLayout, cardLayouts: [] });
    }
 
    onImagesReady(images: string[]) {
       this.images = images;
       this.imagesReady = images.length === this.requiredImages;
-      this.cards = [];
-      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards: [], cardLayout: this.cardLayout });
+      if (this.imageChangedByUser) {
+         this.imageChangedByUser = false;
+         this.cards = [];
+         this.savedCardLayouts = [];
+         this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards: [], cardLayout: this.cardLayout, cardLayouts: [] });
+      }
    }
 
    onImageStatesChange(imageStates: ImageState[]) {
       this.savedImageStates = imageStates;
-      this.persistence.save({ mode: this.mode, imageStates, cards: this.cards, cardLayout: this.cardLayout });
+      this.imageChangedByUser = true;
+      this.persistence.save({ mode: this.mode, imageStates, cards: this.cards, cardLayout: this.cardLayout, cardLayouts: this.savedCardLayouts });
    }
 
    onLayoutChange(layout: CardLayout) {
       this.cardLayout = layout;
-      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards: this.cards, cardLayout: layout });
+      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards: this.cards, cardLayout: layout, cardLayouts: this.savedCardLayouts });
+   }
+
+   onCardLayoutsChange(layouts: ImgLayout[][]) {
+      this.savedCardLayouts = layouts;
+      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards: this.cards, cardLayout: this.cardLayout, cardLayouts: layouts });
    }
 
    generateCards() {
@@ -130,8 +148,9 @@ export class AppComponent implements OnInit {
          }
       }
 
+      this.savedCardLayouts = [];  // cleared before cards so card-preview recomputes fresh layouts
       this.cards = cards;
-      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards, cardLayout: this.cardLayout });
+      this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards, cardLayout: this.cardLayout, cardLayouts: [] });
    }
 
    private generateDefaultImage(n: number): string {

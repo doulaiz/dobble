@@ -1,15 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardLayout } from '../../classes/card-layout';
+import { ImgLayout } from '../../classes/img-layout';
 
 type Card = string[];
-
-interface ImgLayout {
-  x: number;
-  y: number;
-  size: number;
-  rotate: number;
-}
 
 @Component({
   selector: 'app-card-preview',
@@ -19,25 +13,33 @@ interface ImgLayout {
   imports: [CommonModule]
 })
 export class CardPreviewComponent implements OnChanges {
-  private _cards: Card[] = [];
+  @Input() cards: Card[] = [];
+  @Input() restoredLayouts: ImgLayout[][] = [];
+  @Input() cardLayout: CardLayout = new CardLayout();
+  @Output() cardLayoutsChange = new EventEmitter<ImgLayout[][]>();
+
   cardLayouts: ImgLayout[][] = [];
 
-  @Input() set cards(value: Card[]) {
-    this._cards = value;
-    this.rebuildLayouts();
-  }
-  get cards(): Card[] { return this._cards; }
-
-  @Input() cardLayout: CardLayout = new CardLayout();
-
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['cardLayout'] && this._cards.length) {
-      this.rebuildLayouts();
+    if (changes['cards']) {
+      // When cards arrive, use restored layouts if they match exactly (page reload),
+      // otherwise compute fresh ones (new generation).
+      const restored = this.restoredLayouts;
+      if (
+        this.cards.length > 0 &&
+        restored.length === this.cards.length &&
+        restored.every((cl, i) => cl.length === this.cards[i].length)
+      ) {
+        this.cardLayouts = restored;
+      } else {
+        this.cardLayouts = this.cards.map(card => this.computeLayout(card));
+        if (this.cards.length > 0) setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+      }
+    } else if (changes['cardLayout'] && this.cards.length) {
+      // Card dimensions changed: recompute positions in the new pixel space.
+      this.cardLayouts = this.cards.map(card => this.computeLayout(card));
+      setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
     }
-  }
-
-  private rebuildLayouts(): void {
-    this.cardLayouts = this._cards.map(card => this.computeLayout(card));
   }
 
   private readonly MM_TO_PX = 3.7795;
@@ -72,7 +74,7 @@ export class CardPreviewComponent implements OnChanges {
     const cols = Math.ceil(Math.sqrt(n));
     const rows = Math.ceil(n / cols);
 
-    // Base diameter: at max scale the circle fits within its grid cell with a small gap
+    // Base diameter: at max scale the circle still fits within its grid cell
     const maxScale = 1.3;
     const baseSize = Math.min(W / cols, H / rows) / maxScale * 0.90;
 

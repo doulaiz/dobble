@@ -55,6 +55,19 @@ export class AppComponent implements OnInit {
       }
    }
 
+   fillWithDefaults() {
+      const current = Array.from({ length: this.requiredImages }, (_, i) =>
+         this.savedImageStates[i] ?? new ImageState()
+      );
+      const filled = current.map((state, i) => {
+         if (state.image || state.croppedImage) return state;
+         const img = this.generateDefaultImage(i + 1);
+         return { ...state, image: img, croppedImage: img, zoomLevel: 1, angleLevel: 0 };
+      });
+      this.savedImageStates = filled;
+      this.persistence.save({ mode: this.mode, imageStates: filled, cards: this.cards, cardLayout: this.cardLayout });
+   }
+
    resetAll() {
       this.savedImageStates = [];
       this.imagesReady = false;
@@ -111,6 +124,25 @@ export class AppComponent implements OnInit {
 
       this.cards = cards;
       this.persistence.save({ mode: this.mode, imageStates: this.savedImageStates, cards, cardLayout: this.cardLayout });
+   }
+
+   private generateDefaultImage(n: number): string {
+      const size = 400;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d')!;
+      const hue = Math.floor(Math.random() * 360);
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.fillStyle = `hsl(${hue}, 65%, 60%)`;
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.font = `bold ${Math.round(size * 0.44)}px Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(n), size / 2, size / 2);
+      return canvas.toDataURL('image/png');
    }
 
    private randomCard(images: string[], perCard: number): Card {

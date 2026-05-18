@@ -47,6 +47,28 @@
   color: #444;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-fill-defaults {
+  background: none;
+  border: none;
+  color: #2e7d32;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.btn-fill-defaults:hover {
+  background: #e8f5e9;
+}
+
 .btn-reset-trigger {
   background: none;
   border: none;

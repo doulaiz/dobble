@@ -12,9 +12,10 @@
   <div class="images-section-header">
     <span class="images-section-title">Images</span>
     @if (!showResetConfirm) {
-      <button class="btn-reset-trigger" (click)="showResetConfirm = true">
-        Start from scratch
-      </button>
+      <div class="header-actions">
+        <button class="btn-fill-defaults" (click)="fillWithDefaults()">Fill with defaults</button>
+        <button class="btn-reset-trigger" (click)="showResetConfirm = true">Start from scratch</button>
+      </div>
     } @else {
       <div class="reset-confirm">
         <span>Delete all images?</span>

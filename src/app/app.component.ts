@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
    showResetConfirm = false;
    cardLayout: CardLayout = new CardLayout();
 
-   constructor(private persistence: PersistenceService) {}
+   constructor(private persistence: PersistenceService) { }
 
    ngOnInit(): void {
       const saved = this.persistence.load();
@@ -108,17 +108,25 @@ export class AppComponent implements OnInit {
       if (!this.imagesReady) return;
 
       const cards: Card[] = [];
-      const perCard = this.mode;
-      const maxAttempts = 5000;
+      const order = this.mode - 1;
 
-      let attempts = 0;
-      while (cards.length < 20 && attempts < maxAttempts) {
-         attempts++;
-         const card = this.randomCard(this.images, perCard);
-         const key = card.slice().sort().join('|');
-         const exists = cards.some(c => c.slice().sort().join('|') === key);
-         if (!exists) {
-            cards.push(card);
+      // First set of cards (symbol 0 on all)
+      for (let i = 0; i <= order; i++) {
+         const indices = [0];
+         for (let j = 0; j < order; j++) {
+            indices.push(i * order + j + 1);
+         }
+         cards.push(Array.from(indices).map(i => this.images[i]));
+      }
+
+      // Remaining sets
+      for (let a = 1; a <= order; a++) {
+         for (let b = 1; b <= order; b++) {
+            const indices = [a];
+            for (let k = 0; k < order; k++) {
+               indices.push(order + 1 + order * k + ((a * k + b - 1) % order));
+            }
+            cards.push(Array.from(indices).map(i => this.images[i]));
          }
       }
 
@@ -145,11 +153,4 @@ export class AppComponent implements OnInit {
       return canvas.toDataURL('image/png');
    }
 
-   private randomCard(images: string[], perCard: number): Card {
-      const indices = new Set<number>();
-      while (indices.size < perCard) {
-         indices.add(Math.floor(Math.random() * images.length));
-      }
-      return Array.from(indices).map(i => images[i]);
-   }
 }

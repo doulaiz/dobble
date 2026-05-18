@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { ImageState } from '../../classes/image-state';
 
@@ -23,6 +23,8 @@ export class ImageUploaderModalComponent implements OnChanges {
 
    transform: ImageTransform = { scale: 1, translateUnit: 'px' };
 
+   constructor(private cdr: ChangeDetectorRef) {}
+
    ngOnChanges(changes: SimpleChanges): void {
       if (changes['imageState'] && this.showModal) {
          this.loadFromImageState();
@@ -43,11 +45,24 @@ export class ImageUploaderModalComponent implements OnChanges {
       this.croppedImage = event.base64!;
    }
 
+   // After the image loads inside the OnPush cropper, imageVisible is set to true but CD
+   // hasn't run yet to reflect it. Nudge the transform (new reference dirtying the OnPush
+   // input) then call detectChanges() synchronously — zone-independent, always works.
+   onCropperReady() {
+      setTimeout(() => {
+         this.transform = { ...this.transform };
+         this.cdr.detectChanges();
+      });
+   }
+
    doShowModal() {
       this.zoom = 1;
       this.rotation = 0;
+      this.imageBase64 = '';
+      this.croppedImage = '';
       this.transform = { scale: 1, translateUnit: 'px' };
       this.showModal = true;
+      this.loadFromImageState();
    }
 
    cancelModal() {
@@ -86,11 +101,14 @@ export class ImageUploaderModalComponent implements OnChanges {
          const file = e.target.files?.[0];
          if (!file) return;
          const reader = new FileReader();
+         // FileReader.onload fires outside Angular's zone. detectChanges() is zone-independent
+         // and forces the @if(imageBase64) block to re-render immediately.
          reader.onload = (ev: any) => {
             this.imageBase64 = ev.target.result;
             this.zoom = 1;
             this.rotation = 0;
             this.transform = { scale: 1, translateUnit: 'px' };
+            this.cdr.detectChanges();
          };
          reader.readAsDataURL(file);
       };

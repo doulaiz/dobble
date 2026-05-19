@@ -1,6 +1,9 @@
 <div class="image-item-container">
    <div class="preview" (click)="onClick($event)">
-      <img *ngIf="imageState && imageState.croppedImage" class="circle-preview" [src]="imageState.croppedImage" />
-      <div *ngIf="!imageState || !imageState.croppedImage" class="no-image">+</div>
+      @if (imageState && imageState.croppedImage) {
+         <img class="circle-preview" [src]="imageState.croppedImage" />
+      } @else {
+         <div class="no-image">+</div>
+      }
    </div>
 </div>

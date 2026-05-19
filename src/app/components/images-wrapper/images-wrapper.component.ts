@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ImageItemComponent } from '../image-item/image-item.component';
 import { ImageState } from '../../classes/image-state';
 import { ImageUploaderModalComponent } from '../image-uploader-modal/image-uploader-modal.component';
@@ -7,7 +6,7 @@ import { ImageUploaderModalComponent } from '../image-uploader-modal/image-uploa
 @Component({
    selector: 'app-images-wrapper',
    standalone: true,
-   imports: [CommonModule, ImageItemComponent, ImageUploaderModalComponent],
+   imports: [ImageItemComponent, ImageUploaderModalComponent],
    templateUrl: './images-wrapper.component.html',
    styleUrl: './images-wrapper.component.css'
 })
@@ -17,7 +16,6 @@ export class ImagesWrapperComponent implements OnChanges {
 
    @Output() imagesReady = new EventEmitter<string[]>();
    @Output() imageStatesChange = new EventEmitter<ImageState[]>();
-   @Output() showModal = new EventEmitter<boolean>();
 
    imageStates: ImageState[] = [];
    selectedImageIndex: number = -1;
@@ -65,13 +63,11 @@ export class ImagesWrapperComponent implements OnChanges {
    }
 
    onModalClosed() {
-      this.showModal.emit(false);
       this.selectedImageIndex = -1;
    }
 
    onImageItemClick(index: number) {
       this.selectedImageIndex = index;
-      this.showModal.emit(true);
    }
 
    onModalImageStateChange(event: { index: number; imageState: ImageState }) {

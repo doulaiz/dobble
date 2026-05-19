@@ -31,6 +31,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   @Output() cardLayoutsChange = new EventEmitter<ImgLayout[][]>();
 
   cardLayouts: ImgLayout[][] = [];
+  reshufflingCards = new Set<number>();
   private drag: DragState | null = null;
 
   private readonly boundMouseMove = this.onMouseMove.bind(this);
@@ -55,10 +56,15 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   }
 
   reshuffleCard(index: number): void {
+    this.reshufflingCards.add(index);
     const updated = [...this.cardLayouts];
     updated[index] = this.computeLayout(this.cards[index]);
     this.cardLayouts = updated;
     setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+  }
+
+  onReshuffleAnimEnd(index: number): void {
+    this.reshufflingCards.delete(index);
   }
 
   ngOnChanges(changes: SimpleChanges): void {

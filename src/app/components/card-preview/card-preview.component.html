@@ -22,7 +22,10 @@
               }
             </div>
           </div>
-          <button mat-icon-button class="card-reshuffle-btn" title="Reshuffle layout" (click)="reshuffleCard(ci)">
+          <button mat-icon-button class="card-reshuffle-btn" title="Reshuffle layout"
+            [class.spinning]="reshufflingCards.has(ci)"
+            (click)="reshuffleCard(ci)"
+            (animationend)="onReshuffleAnimEnd(ci)">
             <lucide-icon name="shuffle" [size]="15" />
           </button>
         </div>

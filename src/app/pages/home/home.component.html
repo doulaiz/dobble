@@ -69,7 +69,7 @@
       class="btn-generate"
       [disabled]="!imagesReady"
       (click)="generateCards()">
-      Generate the {{ requiredImages }} Cards
+      {{ cards.length ? 'Reshuffle all the cards' : 'Generate the ' + requiredImages + ' Cards' }}
     </button>
     <div class="layout-settings-anchor">
       <app-card-layout-settings
@@ -79,7 +79,7 @@
     </div>
   </div>
 
-  @if (imagesReady) {
+  @if (cards.length) {
     <hr />
 
     <!-- Card Preview -->

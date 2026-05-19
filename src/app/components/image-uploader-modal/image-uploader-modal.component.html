@@ -75,9 +75,15 @@
               <lucide-icon name="folder-open" [size]="16" />
               Browse image
             </button>
+            @if (imageState.image && !pendingDelete) {
+              <button mat-stroked-button color="warn" class="btn-delete" (click)="deleteImage()">
+                <lucide-icon name="trash-2" [size]="16" />
+                Remove image
+              </button>
+            }
             <div class="action-buttons">
               <button mat-button (click)="cancelModal()">Cancel</button>
-              <button mat-flat-button color="primary" (click)="confirmImage()">
+              <button mat-flat-button color="primary" [disabled]="!pendingDelete && !imageBase64 && !imageState.image" (click)="confirmImage()">
                 <lucide-icon name="check" [size]="16" />
                 OK
               </button>

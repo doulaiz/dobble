@@ -23,6 +23,7 @@ export class ImageUploaderModalComponent implements OnChanges {
    croppedImage: string = '';
    zoom = 1;
    rotation = 0;
+   pendingDelete = false;
 
    transform: ImageTransform = { scale: 1, translateUnit: 'px' };
 
@@ -62,9 +63,16 @@ export class ImageUploaderModalComponent implements OnChanges {
       this.rotation = 0;
       this.imageBase64 = '';
       this.croppedImage = '';
+      this.pendingDelete = false;
       this.transform = { scale: 1, translateUnit: 'px' };
       this.showModal = true;
       this.loadFromImageState();
+   }
+
+   deleteImage() {
+      this.imageBase64 = '';
+      this.croppedImage = '';
+      this.pendingDelete = true;
    }
 
    @HostListener('document:keydown.escape')
@@ -111,6 +119,11 @@ export class ImageUploaderModalComponent implements OnChanges {
    }
 
    confirmImage() {
+      if (this.pendingDelete) {
+         this.imageStateChange.emit({ index: this.index, imageState: new ImageState() });
+         this.cancelModal();
+         return;
+      }
       const finalCrop = this.croppedImage || this.imageState.croppedImage;
       if (!finalCrop) return;
       this.imageStateChange.emit({

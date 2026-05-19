@@ -207,6 +207,11 @@ image-cropper ::ng-deep .ngx-ic-cropper {
   gap: 6px;
 }
 
+.btn-delete {
+  width: 100%;
+  gap: 6px;
+}
+
 .action-buttons {
   display: flex;
   gap: 8px;

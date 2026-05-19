@@ -1,0 +1,103 @@
+<div class="app-container">
+
+  <!-- Hero Header -->
+  <header class="hero-header">
+    <div class="hero-dots" aria-hidden="true">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-blue"></span>
+      <span class="dot dot-green"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-purple"></span>
+    </div>
+    <h1 class="hero-title">Dobble Card Creator</h1>
+    <p class="hero-subtitle">
+      Upload your own images, generate a mathematically balanced custom card deck,
+      and export it print-ready in seconds.
+    </p>
+    <a class="how-to-play-link" href="how-to-play" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <path d="M12 17h.01"/>
+      </svg>
+      How to play Dobble?
+    </a>
+  </header>
+
+  <!-- Mode Selector -->
+  <app-mode-selector
+    [initialMode]="mode"
+    (modeChange)="onModeChange($event)">
+  </app-mode-selector>
+
+  <hr />
+
+  <!-- Image Section Header -->
+  <div class="images-section-header">
+    <span class="images-section-title">Images — {{ requiredImages }} needed</span>
+    @if (!showResetConfirm) {
+      <div class="header-actions">
+        <button mat-button color="primary" (click)="fillWithDefaults()">Fill with defaults</button>
+        <button mat-button color="warn" (click)="showResetConfirm = true">Reset all</button>
+      </div>
+    } @else {
+      <div class="reset-confirm">
+        <span>Delete all images?</span>
+        <button mat-flat-button color="warn" (click)="resetAll()">Yes, delete</button>
+        <button mat-button (click)="showResetConfirm = false">Cancel</button>
+      </div>
+    }
+  </div>
+
+  <!-- Image Upload & Editing -->
+  <app-images-wrapper
+    [requiredImages]="requiredImages"
+    [initialImageStates]="savedImageStates"
+    (imagesReady)="onImagesReady($event)"
+    (imageStatesChange)="onImageStatesChange($event)">
+  </app-images-wrapper>
+
+  <hr />
+
+  <!-- Generate Cards -->
+  <div class="generate-section">
+    <button
+      mat-flat-button
+      color="primary"
+      class="btn-generate"
+      [disabled]="!imagesReady"
+      (click)="generateCards()">
+      Generate the {{ requiredImages }} Cards
+    </button>
+    <div class="layout-settings-anchor">
+      <app-card-layout-settings
+        [layout]="cardLayout"
+        (layoutChange)="onLayoutChange($event)">
+      </app-card-layout-settings>
+    </div>
+  </div>
+
+  @if (imagesReady) {
+    <hr />
+
+    <!-- Card Preview -->
+    <app-card-preview
+      [cards]="cards"
+      [restoredLayouts]="savedCardLayouts"
+      [cardLayout]="cardLayout"
+      (cardLayoutsChange)="onCardLayoutsChange($event)">
+    </app-card-preview>
+
+    <hr />
+
+    <!-- Export -->
+    <app-export-panel
+      [cards]="cards"
+      [cardLayouts]="savedCardLayouts"
+      [cardLayout]="cardLayout">
+    </app-export-panel>
+  }
+
+</div>

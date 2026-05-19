@@ -1,0 +1,120 @@
+.hero-header {
+  padding: 2.5rem 0 2rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+  border-bottom: 1px solid #e3eaf3;
+  margin: -16px -16px 0;
+  padding: 2.5rem 20px 2rem;
+}
+
+.hero-dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-red    { background: #e74c3c; }
+.dot-blue   { background: #3498db; }
+.dot-green  { background: #2ecc71; }
+.dot-yellow { background: #f1c40f; }
+.dot-purple { background: #9b59b6; }
+
+.hero-title {
+  font-family: 'Poppins', Roboto, sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #1565c0 0%, #0288d1 55%, #00acc1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: #546e7a;
+  margin: 0 0 1.25rem;
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.how-to-play-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0288d1;
+  text-decoration: none;
+  border: 1.5px solid #b3d9f0;
+  border-radius: 2rem;
+  padding: 6px 14px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.how-to-play-link:hover {
+  background: #e3f4fd;
+  border-color: #0288d1;
+}
+
+.generate-section {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.layout-settings-anchor {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.btn-generate {
+  font-size: 0.95rem;
+  padding: 0 2rem;
+  height: 44px;
+  letter-spacing: 0.01em;
+}
+
+.images-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px 0;
+}
+
+.images-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.reset-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #444;
+}
+
+@media (max-width: 600px) {
+  .hero-title { font-size: 1.8rem; }
+  .hero-subtitle { font-size: 0.9375rem; }
+}

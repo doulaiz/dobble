@@ -187,8 +187,11 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
     const cols = Math.ceil(Math.sqrt(n));
     const rows = Math.ceil(n / cols);
-    const baseSize = Math.min(W / cols, H / rows) / 1.3 * 1.10;
-    const radii = card.map(() => baseSize * (0.7 + Math.random() * 0.6) / 2);
+    const spacingFactor = 1.1; // reduce max cell size to leave room for random placement and avoid tight packing
+    const baseSize = Math.min(W / cols, H / rows) / spacingFactor;
+    const minRadiusFactor = 0.7;
+    const variability = 0.6;
+    const radii = card.map(() => baseSize * (minRadiusFactor + Math.random() * variability) / 2);
 
     const pos = card.map((_, i) => ({
       x: radii[i] + Math.random() * (W - 2 * radii[i]),

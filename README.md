@@ -2,14 +2,14 @@
 
 A web app for creating custom [Dobble](https://en.wikipedia.org/wiki/Dobble) (a.k.a. Spot It!) card decks with your own images.
 
-Dobble is a card game where every pair of cards shares **exactly one** matching symbol. This app generates the mathematically correct card layouts using a [projective plane](https://en.wikipedia.org/wiki/Projective_plane) construction, then lets you export the result for printing.
+Dobble is a card game where every pair of cards shares **exactly one** matching symbol. This app generates the correct card layout then lets you export the result for printing.
 
 ## How it works
 
-1. **Choose a game mode** — 4, 6, or 8 symbols per card, yielding decks of 13, 31, or 57 cards respectively
-2. **Upload your symbols** — provide one image per symbol slot; images can be cropped and rotated in-app
-3. **Generate cards** — the app computes the unique symbol distribution guaranteeing one match per card pair
-4. **Preview & arrange** — inspect every card and drag symbols to reposition them before exporting
+1. **Choose a game mode** — 4, 6, or 8 images per card, yielding decks of 13, 31, or 57 cards respectively
+2. **Upload your images** — provide one image per slot; images can be cropped and rotated in-app
+3. **Generate cards** — the app computes the unique image distribution guaranteeing one match per card pair
+4. **Preview & arrange** — inspect every card and drag image to reposition them before exporting
 5. **Export** — download a ZIP of print-ready PNG files, one per card
 
 Your work is automatically saved in the browser so you can pick up where you left off.

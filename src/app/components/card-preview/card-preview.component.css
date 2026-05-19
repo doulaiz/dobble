@@ -85,6 +85,12 @@ h2 {
   opacity: 1;
 }
 
+@media (hover: none) {
+  .card-reshuffle-btn {
+    opacity: 1;
+  }
+}
+
 .card-reshuffle-btn:hover {
   background: #fff;
   color: #222;

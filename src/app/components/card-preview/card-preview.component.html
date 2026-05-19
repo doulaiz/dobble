@@ -14,7 +14,8 @@
                   [style.top.px]="cardLayouts[ci]?.[ii]?.y"
                   [style.width.px]="cardLayouts[ci]?.[ii]?.size"
                   [style.height.px]="cardLayouts[ci]?.[ii]?.size"
-                  (mousedown)="onSymbolMouseDown($event, ci, ii)">
+                  (mousedown)="onSymbolMouseDown($event, ci, ii)"
+                  (touchstart)="onSymbolTouchStart($event, ci, ii)">
                   <img class="card-img" [src]="img"
                     [style.transform]="'rotate(' + (cardLayouts[ci]?.[ii]?.rotate ?? 0) + 'deg)'" />
                 </div>

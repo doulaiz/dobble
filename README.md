@@ -9,8 +9,8 @@ Dobble is a card game where every pair of cards shares **exactly one** matching 
 1. **Choose a game mode** — 4, 6, or 8 symbols per card, yielding decks of 13, 31, or 57 cards respectively
 2. **Upload your symbols** — provide one image per symbol slot; images can be cropped and rotated in-app
 3. **Generate cards** — the app computes the unique symbol distribution guaranteeing one match per card pair
-4. **Preview & arrange** — inspect every card and tweak image positions before exporting
-5. **Export** — print-ready PDF export (in progress)
+4. **Preview & arrange** — inspect every card and drag symbols to reposition them before exporting
+5. **Export** — download a ZIP of print-ready PNG files, one per card
 
 Your work is automatically saved in the browser so you can pick up where you left off.
 

@@ -34,17 +34,23 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   private readonly boundMouseMove = this.onMouseMove.bind(this);
   private readonly boundMouseUp = this.onMouseUp.bind(this);
+  private readonly boundTouchMove = this.onTouchMove.bind(this);
+  private readonly boundTouchEnd = this.onTouchEnd.bind(this);
 
   constructor(private ngZone: NgZone) {
     ngZone.runOutsideAngular(() => {
       document.addEventListener('mousemove', this.boundMouseMove);
       document.addEventListener('mouseup', this.boundMouseUp);
+      document.addEventListener('touchmove', this.boundTouchMove, { passive: false });
+      document.addEventListener('touchend', this.boundTouchEnd);
     });
   }
 
   ngOnDestroy(): void {
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
+    document.removeEventListener('touchmove', this.boundTouchMove);
+    document.removeEventListener('touchend', this.boundTouchEnd);
   }
 
   reshuffleCard(index: number): void {
@@ -78,37 +84,46 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   onSymbolMouseDown(event: MouseEvent, ci: number, ii: number): void {
     event.preventDefault();
-    const layout = this.cardLayouts[ci]?.[ii];
-    if (!layout) return;
-    const wrapperEl = event.currentTarget as HTMLElement;
-    const contentEl = wrapperEl.parentElement!;
-    const rect = contentEl.getBoundingClientRect();
-    this.drag = {
-      ci, ii,
-      offsetX: event.clientX - rect.left - layout.x,
-      offsetY: event.clientY - rect.top - layout.y,
-      contentEl, wrapperEl,
-      x: layout.x, y: layout.y,
-    };
-    wrapperEl.style.zIndex = '100';
+    this.startDrag(event.clientX, event.clientY, ci, ii, event.currentTarget as HTMLElement);
     document.body.style.cursor = 'grabbing';
     document.body.style.userSelect = 'none';
   }
 
-  private onMouseMove(event: MouseEvent): void {
+  onSymbolTouchStart(event: TouchEvent, ci: number, ii: number): void {
+    event.preventDefault();
+    const touch = event.touches[0];
+    this.startDrag(touch.clientX, touch.clientY, ci, ii, event.currentTarget as HTMLElement);
+  }
+
+  private startDrag(clientX: number, clientY: number, ci: number, ii: number, wrapperEl: HTMLElement): void {
+    const layout = this.cardLayouts[ci]?.[ii];
+    if (!layout) return;
+    const contentEl = wrapperEl.parentElement!;
+    const rect = contentEl.getBoundingClientRect();
+    this.drag = {
+      ci, ii,
+      offsetX: clientX - rect.left - layout.x,
+      offsetY: clientY - rect.top - layout.y,
+      contentEl, wrapperEl,
+      x: layout.x, y: layout.y,
+    };
+    wrapperEl.style.zIndex = '100';
+  }
+
+  private moveDrag(clientX: number, clientY: number): void {
     if (!this.drag) return;
     const { ci, ii, offsetX, offsetY, contentEl, wrapperEl } = this.drag;
     const rect = contentEl.getBoundingClientRect();
     const size = this.cardLayouts[ci][ii].size;
-    const x = Math.round(Math.max(0, Math.min(this.contentWidthPx - size, event.clientX - rect.left - offsetX)));
-    const y = Math.round(Math.max(0, Math.min(this.contentHeightPx - size, event.clientY - rect.top - offsetY)));
+    const x = Math.round(Math.max(0, Math.min(this.contentWidthPx - size, clientX - rect.left - offsetX)));
+    const y = Math.round(Math.max(0, Math.min(this.contentHeightPx - size, clientY - rect.top - offsetY)));
     this.drag.x = x;
     this.drag.y = y;
     wrapperEl.style.left = x + 'px';
     wrapperEl.style.top = y + 'px';
   }
 
-  private onMouseUp(): void {
+  private endDrag(): void {
     if (!this.drag) return;
     const { ci, ii, x, y, wrapperEl } = this.drag;
     this.drag = null;
@@ -121,6 +136,24 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       );
       setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
     });
+  }
+
+  private onMouseMove(event: MouseEvent): void {
+    this.moveDrag(event.clientX, event.clientY);
+  }
+
+  private onMouseUp(): void {
+    this.endDrag();
+  }
+
+  private onTouchMove(event: TouchEvent): void {
+    if (!this.drag) return;
+    event.preventDefault();
+    this.moveDrag(event.touches[0].clientX, event.touches[0].clientY);
+  }
+
+  private onTouchEnd(): void {
+    this.endDrag();
   }
 
   private readonly MM_TO_PX = 3.7795;

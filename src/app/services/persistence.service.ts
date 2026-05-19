@@ -8,7 +8,8 @@ type Mode = 4 | 6 | 8;
 interface PersistedState {
   mode: Mode;
   imageStates: ImageState[];
-  cards: string[][];
+  cardIndices?: number[][];
+  cards?: string[][];  // legacy, kept for backward compat
   cardLayout?: CardLayout;
   cardLayouts?: ImgLayout[][];
 }

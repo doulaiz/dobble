@@ -61,6 +61,9 @@ export class ExportPanelComponent {
           ctx.save();
           ctx.translate(cx, cy);
           ctx.rotate(l.rotate * Math.PI / 180);
+          ctx.beginPath();
+          ctx.arc(0, 0, l.size / 2, 0, Math.PI * 2);
+          ctx.clip();
           ctx.drawImage(img, -l.size / 2, -l.size / 2, l.size, l.size);
           ctx.restore();
         }

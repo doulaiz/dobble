@@ -3,8 +3,8 @@
 
   <button
     class="btn-export"
-    [disabled]="!cards || cards.length === 0"
-    (click)="exportPDF()">
-    Export to PDF
+    [disabled]="!cards || cards.length === 0 || exporting"
+    (click)="exportImages()">
+    {{ exporting ? 'Exporting…' : 'Export Images' }}
   </button>
 </div>

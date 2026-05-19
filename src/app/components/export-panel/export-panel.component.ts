@@ -26,7 +26,9 @@ export class ExportPanelComponent {
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
 
-      const mm = (v: number) => Math.round(v * MM_TO_PX);
+      const EXPORT_PX_PER_MM = 400 / 25.4;
+      const layoutScale = EXPORT_PX_PER_MM / MM_TO_PX;
+      const mm = (v: number) => Math.round(v * EXPORT_PX_PER_MM);
       const cardW = mm(this.cardLayout.width);
       const cardH = mm(this.cardLayout.height);
       const padH = mm(this.cardLayout.marginLeft);
@@ -56,15 +58,16 @@ export class ExportPanelComponent {
           const l = layout[ii];
           if (!l) continue;
           const img = await loadImage(this.cards[ci][ii]);
-          const cx = padH + l.x + l.size / 2;
-          const cy = padV + l.y + l.size / 2;
+          const size = l.size * layoutScale;
+          const cx = padH + l.x * layoutScale + size / 2;
+          const cy = padV + l.y * layoutScale + size / 2;
           ctx.save();
           ctx.translate(cx, cy);
           ctx.rotate(l.rotate * Math.PI / 180);
           ctx.beginPath();
-          ctx.arc(0, 0, l.size / 2, 0, Math.PI * 2);
+          ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
           ctx.clip();
-          ctx.drawImage(img, -l.size / 2, -l.size / 2, l.size, l.size);
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
           ctx.restore();
         }
 

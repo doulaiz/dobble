@@ -1,9 +1,20 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
 
 type Card = string[];
+
+interface DragState {
+  ci: number;
+  ii: number;
+  offsetX: number;
+  offsetY: number;
+  contentEl: HTMLElement;
+  wrapperEl: HTMLElement;
+  x: number;
+  y: number;
+}
 
 @Component({
   selector: 'app-card-preview',
@@ -12,13 +23,29 @@ type Card = string[];
   styleUrls: ['./card-preview.component.css'],
   imports: [CommonModule]
 })
-export class CardPreviewComponent implements OnChanges {
+export class CardPreviewComponent implements OnChanges, OnDestroy {
   @Input() cards: Card[] = [];
   @Input() restoredLayouts: ImgLayout[][] = [];
   @Input() cardLayout: CardLayout = new CardLayout();
   @Output() cardLayoutsChange = new EventEmitter<ImgLayout[][]>();
 
   cardLayouts: ImgLayout[][] = [];
+  private drag: DragState | null = null;
+
+  private readonly boundMouseMove = this.onMouseMove.bind(this);
+  private readonly boundMouseUp = this.onMouseUp.bind(this);
+
+  constructor(private ngZone: NgZone) {
+    ngZone.runOutsideAngular(() => {
+      document.addEventListener('mousemove', this.boundMouseMove);
+      document.addEventListener('mouseup', this.boundMouseUp);
+    });
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('mousemove', this.boundMouseMove);
+    document.removeEventListener('mouseup', this.boundMouseUp);
+  }
 
   reshuffleCard(index: number): void {
     const updated = [...this.cardLayouts];
@@ -47,6 +74,53 @@ export class CardPreviewComponent implements OnChanges {
       this.cardLayouts = this.cards.map(card => this.computeLayout(card));
       setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
     }
+  }
+
+  onSymbolMouseDown(event: MouseEvent, ci: number, ii: number): void {
+    event.preventDefault();
+    const layout = this.cardLayouts[ci]?.[ii];
+    if (!layout) return;
+    const wrapperEl = event.currentTarget as HTMLElement;
+    const contentEl = wrapperEl.parentElement!;
+    const rect = contentEl.getBoundingClientRect();
+    this.drag = {
+      ci, ii,
+      offsetX: event.clientX - rect.left - layout.x,
+      offsetY: event.clientY - rect.top - layout.y,
+      contentEl, wrapperEl,
+      x: layout.x, y: layout.y,
+    };
+    wrapperEl.style.zIndex = '100';
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+  }
+
+  private onMouseMove(event: MouseEvent): void {
+    if (!this.drag) return;
+    const { ci, ii, offsetX, offsetY, contentEl, wrapperEl } = this.drag;
+    const rect = contentEl.getBoundingClientRect();
+    const size = this.cardLayouts[ci][ii].size;
+    const x = Math.round(Math.max(0, Math.min(this.contentWidthPx - size, event.clientX - rect.left - offsetX)));
+    const y = Math.round(Math.max(0, Math.min(this.contentHeightPx - size, event.clientY - rect.top - offsetY)));
+    this.drag.x = x;
+    this.drag.y = y;
+    wrapperEl.style.left = x + 'px';
+    wrapperEl.style.top = y + 'px';
+  }
+
+  private onMouseUp(): void {
+    if (!this.drag) return;
+    const { ci, ii, x, y, wrapperEl } = this.drag;
+    this.drag = null;
+    wrapperEl.style.zIndex = '';
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    this.ngZone.run(() => {
+      this.cardLayouts = this.cardLayouts.map((layouts, c) =>
+        c === ci ? layouts.map((l, i) => i === ii ? { ...l, x, y } : l) : layouts
+      );
+      setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+    });
   }
 
   private readonly MM_TO_PX = 3.7795;

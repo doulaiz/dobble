@@ -43,6 +43,11 @@ h2 {
   position: absolute;
   border-radius: 50%;
   overflow: hidden;
+  cursor: grab;
+}
+
+.card-img-wrapper:active {
+  cursor: grabbing;
 }
 
 .card-img {

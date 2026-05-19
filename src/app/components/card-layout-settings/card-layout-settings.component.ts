@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
 import { CardLayout } from '../../classes/card-layout';
+import { pickFile } from '../../utils/pick-file';
 
 @Component({
   selector: 'app-card-layout-settings',
@@ -35,20 +36,8 @@ export class CardLayoutSettingsComponent {
     this.layoutChange.emit(this.layout);
   }
 
-  browseBackground() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/png,image/jpeg,image/webp';
-    input.onchange = (e: any) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev: any) => {
-        this.ngZone.run(() => this.update('backgroundImage', ev.target.result));
-      };
-      reader.readAsDataURL(file);
-    };
-    input.click();
+  async browseBackground() {
+    this.update('backgroundImage', await pickFile('image/png,image/jpeg,image/webp', this.ngZone));
   }
 
   clearBackground() {

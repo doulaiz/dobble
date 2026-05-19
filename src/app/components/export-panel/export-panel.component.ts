@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
-
-type Card = string[];
+import { Card, MM_TO_PX } from '../../utils/dobble.utils';
 
 @Component({
   selector: 'app-export-panel',
@@ -24,7 +23,6 @@ export class ExportPanelComponent {
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
 
-      const MM_TO_PX = 3.7795;
       const mm = (v: number) => Math.round(v * MM_TO_PX);
       const cardW = mm(this.cardLayout.width);
       const cardH = mm(this.cardLayout.height);

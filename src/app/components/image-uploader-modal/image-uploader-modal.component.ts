@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { ImageState } from '../../classes/image-state';
+import { pickFile } from '../../utils/pick-file';
 
 @Component({
    selector: 'app-image-uploader-modal',
@@ -92,29 +93,14 @@ export class ImageUploaderModalComponent implements OnChanges {
       };
    }
 
-   openFileBrowser() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = (e: any) => {
-         const file = e.target.files?.[0];
-         if (!file) return;
-         const reader = new FileReader();
-         reader.onload = (ev: any) => {
-            // FileReader.onload fires outside Angular's zone. ngZone.run() re-enters the zone
-            // so the cropper's internal debounced setTimeout also runs within zone, ensuring
-            // its image-load callbacks trigger automatic CD rather than requiring a manual nudge.
-            this.ngZone.run(() => {
-               this.imageBase64 = ev.target.result;
-               this.zoom = 1;
-               this.rotation = 0;
-               this.transform = { scale: 1, translateUnit: 'px' };
-               this.cdr.detectChanges();
-            });
-         };
-         reader.readAsDataURL(file);
-      };
-      input.click();
+   async openFileBrowser() {
+      // pickFile resolves inside ngZone.run(), so the await continuation is inside Angular's zone.
+      // cdr.detectChanges() is still needed so the cropper's internal CD picks up the new image.
+      this.imageBase64 = await pickFile('image/*', this.ngZone);
+      this.zoom = 1;
+      this.rotation = 0;
+      this.transform = { scale: 1, translateUnit: 'px' };
+      this.cdr.detectChanges();
    }
 
    confirmImage() {

@@ -8,8 +8,7 @@ import { PersistenceService } from './services/persistence.service';
 import { ImageState } from './classes/image-state';
 import { CardLayout } from './classes/card-layout';
 import { ImgLayout } from './classes/img-layout';
-
-type Card = string[];
+import { Card, requiredImagesForMode } from './utils/dobble.utils';
 
 @Component({
    selector: 'app-root',
@@ -43,7 +42,7 @@ export class AppComponent implements OnInit {
       const saved = this.persistence.load();
       if (saved) {
          this.mode = saved.mode;
-         this.requiredImages = saved.mode === 4 ? 13 : saved.mode === 6 ? 31 : 57;
+         this.requiredImages = requiredImagesForMode(saved.mode);
          this.savedImageStates = saved.imageStates ?? [];
          this.savedCardLayouts = saved.cardLayouts ?? [];
          this.cardLayout = saved.cardLayout ?? new CardLayout();
@@ -95,7 +94,7 @@ export class AppComponent implements OnInit {
 
    onModeChange(mode: 4 | 6 | 8) {
       this.mode = mode;
-      this.requiredImages = mode === 4 ? 13 : mode === 6 ? 31 : 57;
+      this.requiredImages = requiredImagesForMode(mode);
       this.imagesReady = false;
       this.images = [];
       this.cards = [];

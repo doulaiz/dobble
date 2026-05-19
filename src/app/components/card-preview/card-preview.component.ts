@@ -2,8 +2,7 @@ import { Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, Output, S
 import { CommonModule } from '@angular/common';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
-
-type Card = string[];
+import { Card, MM_TO_PX } from '../../utils/dobble.utils';
 
 interface DragState {
   ci: number;
@@ -156,8 +155,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     this.endDrag();
   }
 
-  private readonly MM_TO_PX = 3.7795;
-  private mm(v: number): number { return Math.round(v * this.MM_TO_PX); }
+  private mm(v: number): number { return Math.round(v * MM_TO_PX); }
 
   get cardWidthPx(): number { return this.mm(this.cardLayout.width); }
   get cardHeightPx(): number { return this.mm(this.cardLayout.height); }

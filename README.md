@@ -33,7 +33,7 @@ Output goes to `dist/`.
 
 ## Deploy to GitHub Pages
 
-The app is hosted at `https://doulaiz.github.io/dobble/`.
+The app is hosted at [https://doulaiz.github.io/dobble/](https://doulaiz.github.io/dobble/).
 
 ### Deploying
 

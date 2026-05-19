@@ -80,51 +80,70 @@ export class CardPreviewComponent implements OnChanges {
 
     const cols = Math.ceil(Math.sqrt(n));
     const rows = Math.ceil(n / cols);
+    const baseSize = Math.min(W / cols, H / rows) / 1.3 * 1.10;
+    const radii = card.map(() => baseSize * (0.7 + Math.random() * 0.6) / 2);
 
-    // Base diameter: allow circles to slightly overflow their grid cell at max scale;
-    // the relaxation resolves overlaps and fills the space more densely.
-    const maxScale = 1.3;
-    const baseSize = Math.min(W / cols, H / rows) / maxScale * 1.10;
-
-    const scales = card.map(() => 0.7 + Math.random() * 0.6);
-    const radii  = scales.map(s => (baseSize * s) / 2);
-
-    // Start each circle near its grid-cell centre with a random jitter
-    const cellW = W / cols;
-    const cellH = H / rows;
     const pos = card.map((_, i) => ({
-      x: (i % cols + 0.5) * cellW + (Math.random() - 0.5) * cellW * 0.5,
-      y: (Math.floor(i / cols) + 0.5) * cellH + (Math.random() - 0.5) * cellH * 0.5,
+      x: radii[i] + Math.random() * (W - 2 * radii[i]),
+      y: radii[i] + Math.random() * (H - 2 * radii[i]),
     }));
 
     const clamp = (i: number) => {
       pos[i].x = Math.max(radii[i], Math.min(W - radii[i], pos[i].x));
       pos[i].y = Math.max(radii[i], Math.min(H - radii[i], pos[i].y));
     };
-    for (let i = 0; i < n; i++) clamp(i);
 
-    // Iterative relaxation: push overlapping circles apart
     const minGap = 1;
-    for (let iter = 0; iter < 400; iter++) {
-      let moved = false;
+    const totalIter = 500;
+
+    for (let iter = 0; iter < totalIter; iter++) {
+      const t = 1 - iter / totalIter;   // cooling 1 → 0
+      const forces = pos.map(() => ({ x: 0, y: 0 }));
+      let hasOverlap = false;
+
       for (let i = 0; i < n; i++) {
         for (let j = i + 1; j < n; j++) {
-          const dx = pos[j].x - pos[i].x;
-          const dy = pos[j].y - pos[i].y;
+          const dx = pos[i].x - pos[j].x;
+          const dy = pos[i].y - pos[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
-          const need = radii[i] + radii[j] + minGap;
-          if (dist < need) {
-            const push = (need - dist) / 2;
-            const nx = (dx / dist) * push;
-            const ny = (dy / dist) * push;
-            pos[i].x -= nx; pos[i].y -= ny;
-            pos[j].x += nx; pos[j].y += ny;
-            moved = true;
+          const minDist = radii[i] + radii[j] + minGap;
+
+          let push = 0;
+          if (dist < minDist) {
+            push = (minDist - dist) * 0.5;
+            hasOverlap = true;
+          } else if (t > 0.05) {
+            const spreadRange = minDist * (1 + 2 * t);
+            if (dist < spreadRange)
+              push = ((spreadRange - dist) / spreadRange) * t * minDist * 0.35;
+          }
+
+          if (push > 0) {
+            const nx = dx / dist, ny = dy / dist;
+            forces[i].x += nx * push; forces[i].y += ny * push;
+            forces[j].x -= nx * push; forces[j].y -= ny * push;
           }
         }
+      }
+
+      if (t > 0.05) {
+        for (let i = 0; i < n; i++) {
+          const wRange = radii[i] * (1 + 2 * t);
+          const strength = t * radii[i] * 0.7;
+          if (pos[i].x < wRange) forces[i].x += (1 - pos[i].x / wRange) * strength;
+          if (W - pos[i].x < wRange) forces[i].x -= (1 - (W - pos[i].x) / wRange) * strength;
+          if (pos[i].y < wRange) forces[i].y += (1 - pos[i].y / wRange) * strength;
+          if (H - pos[i].y < wRange) forces[i].y -= (1 - (H - pos[i].y) / wRange) * strength;
+        }
+      }
+
+      for (let i = 0; i < n; i++) {
+        pos[i].x += forces[i].x;
+        pos[i].y += forces[i].y;
         clamp(i);
       }
-      if (!moved) break;
+
+      if (t < 0.02 && !hasOverlap) break;
     }
 
     return card.map((_, i) => ({

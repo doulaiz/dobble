@@ -3,21 +3,24 @@
     <h2>Generated Cards</h2>
     <div class="cards-grid">
       @for (card of cards; track $index; let ci = $index) {
-        <div class="card" [ngStyle]="cardStyle">
-          <div class="card-content"
-            [style.width.px]="contentWidthPx"
-            [style.height.px]="contentHeightPx">
-            @for (img of card; track $index; let ii = $index) {
-              <div class="card-img-wrapper"
-                [style.left.px]="cardLayouts[ci]?.[ii]?.x"
-                [style.top.px]="cardLayouts[ci]?.[ii]?.y"
-                [style.width.px]="cardLayouts[ci]?.[ii]?.size"
-                [style.height.px]="cardLayouts[ci]?.[ii]?.size">
-                <img class="card-img" [src]="img"
-                  [style.transform]="'rotate(' + (cardLayouts[ci]?.[ii]?.rotate ?? 0) + 'deg)'" />
-              </div>
-            }
+        <div class="card-wrapper">
+          <div class="card" [ngStyle]="cardStyle">
+            <div class="card-content"
+              [style.width.px]="contentWidthPx"
+              [style.height.px]="contentHeightPx">
+              @for (img of card; track $index; let ii = $index) {
+                <div class="card-img-wrapper"
+                  [style.left.px]="cardLayouts[ci]?.[ii]?.x"
+                  [style.top.px]="cardLayouts[ci]?.[ii]?.y"
+                  [style.width.px]="cardLayouts[ci]?.[ii]?.size"
+                  [style.height.px]="cardLayouts[ci]?.[ii]?.size">
+                  <img class="card-img" [src]="img"
+                    [style.transform]="'rotate(' + (cardLayouts[ci]?.[ii]?.rotate ?? 0) + 'deg)'" />
+                </div>
+              }
+            </div>
           </div>
+          <button class="card-reshuffle-btn" title="Reshuffle layout" (click)="reshuffleCard(ci)">↻</button>
         </div>
       }
     </div>

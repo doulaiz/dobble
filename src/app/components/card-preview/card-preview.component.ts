@@ -20,6 +20,13 @@ export class CardPreviewComponent implements OnChanges {
 
   cardLayouts: ImgLayout[][] = [];
 
+  reshuffleCard(index: number): void {
+    const updated = [...this.cardLayouts];
+    updated[index] = this.computeLayout(this.cards[index]);
+    this.cardLayouts = updated;
+    setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['cards']) {
       // When cards arrive, use restored layouts if they match exactly (page reload),
@@ -74,9 +81,10 @@ export class CardPreviewComponent implements OnChanges {
     const cols = Math.ceil(Math.sqrt(n));
     const rows = Math.ceil(n / cols);
 
-    // Base diameter: at max scale the circle still fits within its grid cell
+    // Base diameter: allow circles to slightly overflow their grid cell at max scale;
+    // the relaxation resolves overlaps and fills the space more densely.
     const maxScale = 1.3;
-    const baseSize = Math.min(W / cols, H / rows) / maxScale * 0.90;
+    const baseSize = Math.min(W / cols, H / rows) / maxScale * 1.10;
 
     const scales = card.map(() => 0.7 + Math.random() * 0.6);
     const radii  = scales.map(s => (baseSize * s) / 2);
@@ -96,7 +104,7 @@ export class CardPreviewComponent implements OnChanges {
     for (let i = 0; i < n; i++) clamp(i);
 
     // Iterative relaxation: push overlapping circles apart
-    const minGap = 3;
+    const minGap = 1;
     for (let iter = 0; iter < 400; iter++) {
       let moved = false;
       for (let i = 0; i < n; i++) {

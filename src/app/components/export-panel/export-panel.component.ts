@@ -43,7 +43,12 @@ export class ExportPanelComponent {
 
         if (this.cardLayout.backgroundImage) {
           const bg = await loadImage(this.cardLayout.backgroundImage);
-          ctx.drawImage(bg, 0, 0, cardW, cardH);
+          const scale = Math.max(cardW / bg.naturalWidth, cardH / bg.naturalHeight);
+          const drawW = bg.naturalWidth * scale;
+          const drawH = bg.naturalHeight * scale;
+          const drawX = (cardW - drawW) / 2;
+          const drawY = (cardH - drawH) / 2;
+          ctx.drawImage(bg, drawX, drawY, drawW, drawH);
         }
 
         const layout = this.cardLayouts[ci] ?? [];

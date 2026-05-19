@@ -31,6 +31,18 @@ npm run build
 
 Output goes to `dist/`.
 
+## Deploy to GitHub Pages
+
+The app is hosted at `https://doulaiz.github.io/dobble/`.
+
+### Deploying
+
+```bash
+npm run deploy
+```
+
+Builds the app for production and pushes the output to the `gh-pages` branch. Should be available after a couple of minutes
+
 ## Tech stack
 
 - [Angular](https://angular.io/) 21

@@ -51,23 +51,25 @@
     </div>
   </div>
 
-  <hr />
+  @if (imagesReady) {
+    <hr />
 
-  <!-- Card Preview -->
-  <app-card-preview
-    [cards]="cards"
-    [restoredLayouts]="savedCardLayouts"
-    [cardLayout]="cardLayout"
-    (cardLayoutsChange)="onCardLayoutsChange($event)">
-  </app-card-preview>
+    <!-- Card Preview -->
+    <app-card-preview
+      [cards]="cards"
+      [restoredLayouts]="savedCardLayouts"
+      [cardLayout]="cardLayout"
+      (cardLayoutsChange)="onCardLayoutsChange($event)">
+    </app-card-preview>
 
-  <hr />
+    <hr />
 
-  <!-- Export -->
-  <app-export-panel
-    [cards]="cards"
-    [cardLayouts]="savedCardLayouts"
-    [cardLayout]="cardLayout">
-  </app-export-panel>
+    <!-- Export -->
+    <app-export-panel
+      [cards]="cards"
+      [cardLayouts]="savedCardLayouts"
+      [cardLayout]="cardLayout">
+    </app-export-panel>
+  }
 
 </div>

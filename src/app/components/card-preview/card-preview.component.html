@@ -22,7 +22,9 @@
               }
             </div>
           </div>
-          <button class="card-reshuffle-btn" title="Reshuffle layout" (click)="reshuffleCard(ci)">↻</button>
+          <button mat-icon-button class="card-reshuffle-btn" title="Reshuffle layout" (click)="reshuffleCard(ci)">
+            <lucide-icon name="shuffle" [size]="15" />
+          </button>
         </div>
       }
     </div>

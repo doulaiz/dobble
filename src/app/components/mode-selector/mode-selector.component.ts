@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-mode-selector',
   standalone: true,
+  imports: [MatRadioModule],
   templateUrl: './mode-selector.component.html',
   styleUrls: ['./mode-selector.component.css']
 })

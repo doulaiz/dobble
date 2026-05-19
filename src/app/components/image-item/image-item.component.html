@@ -3,7 +3,9 @@
       @if (imageState && imageState.croppedImage) {
          <img class="circle-preview" [src]="imageState.croppedImage" />
       } @else {
-         <div class="no-image">+</div>
+         <div class="no-image">
+            <lucide-icon name="plus" [size]="32" />
+         </div>
       }
    </div>
 </div>

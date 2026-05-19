@@ -2,9 +2,12 @@
   <h2>Export</h2>
 
   <button
+    mat-flat-button
+    color="primary"
     class="btn-export"
     [disabled]="!cards || cards.length === 0 || exporting"
     (click)="exportImages()">
+    <lucide-icon name="download" [size]="16" />
     {{ exporting ? 'Exporting…' : 'Export Images' }}
   </button>
 </div>

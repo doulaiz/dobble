@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { LucideAngularModule } from 'lucide-angular';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
 import { Card, MM_TO_PX } from '../../utils/dobble.utils';
@@ -20,7 +22,7 @@ interface DragState {
   standalone: true,
   templateUrl: './card-preview.component.html',
   styleUrls: ['./card-preview.component.css'],
-  imports: [CommonModule]
+  imports: [CommonModule, MatButtonModule, LucideAngularModule]
 })
 export class CardPreviewComponent implements OnChanges, OnDestroy {
   @Input() cards: Card[] = [];

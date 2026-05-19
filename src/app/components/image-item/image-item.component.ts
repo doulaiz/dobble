@@ -1,9 +1,11 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { LucideAngularModule } from 'lucide-angular';
 import { ImageState } from '../../classes/image-state';
 
 @Component({
    selector: 'app-image-item',
    standalone: true,
+   imports: [LucideAngularModule],
    templateUrl: './image-item.component.html',
    styleUrls: ['./image-item.component.css'],
 })

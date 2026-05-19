@@ -1,7 +1,7 @@
 <div class="layout-settings">
 
-  <button class="btn-layout-toggle" (click)="showPanel = !showPanel" title="Card layout settings">
-    ⚙
+  <button mat-icon-button class="btn-layout-toggle" (click)="showPanel = !showPanel" title="Card layout settings">
+    <lucide-icon name="settings" [size]="20" />
   </button>
 
   @if (showPanel) {
@@ -53,9 +53,15 @@
         <div class="field-row field-row--bg">
           <label class="field-label">Background</label>
           <div class="bg-controls">
-            <button class="btn-browse-bg" (click)="browseBackground()">Browse PNG</button>
+            <button mat-stroked-button (click)="browseBackground()">
+              <lucide-icon name="folder-open" [size]="15" />
+              Browse PNG
+            </button>
             @if (layout.backgroundImage) {
-              <button class="btn-clear-bg" (click)="clearBackground()">✕ Remove</button>
+              <button mat-button color="warn" (click)="clearBackground()">
+                <lucide-icon name="x" [size]="14" />
+                Remove
+              </button>
             }
           </div>
         </div>

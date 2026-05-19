@@ -2,7 +2,14 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 16px;
-  font-family: Arial, sans-serif;
+  font-family: Roboto, Arial, sans-serif;
+}
+
+/* Ensure Lucide SVG icons align naturally inside flex buttons */
+lucide-icon, lucide-angular, i-lucide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .thumbnail-grid,

@@ -1,11 +1,13 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { LucideAngularModule } from 'lucide-angular';
 import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { ImageState } from '../../classes/image-state';
 import { pickFile } from '../../utils/pick-file';
 
 @Component({
    selector: 'app-image-uploader-modal',
-   imports: [ImageCropperComponent],
+   imports: [ImageCropperComponent, MatButtonModule, LucideAngularModule],
    standalone: true,
    templateUrl: './image-uploader-modal.component.html',
    styleUrl: './image-uploader-modal.component.css'

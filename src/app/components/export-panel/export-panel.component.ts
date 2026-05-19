@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { LucideAngularModule } from 'lucide-angular';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
 import { Card, MM_TO_PX } from '../../utils/dobble.utils';
@@ -6,6 +8,7 @@ import { Card, MM_TO_PX } from '../../utils/dobble.utils';
 @Component({
   selector: 'app-export-panel',
   standalone: true,
+  imports: [MatButtonModule, LucideAngularModule],
   templateUrl: './export-panel.component.html',
   styleUrls: ['./export-panel.component.css']
 })

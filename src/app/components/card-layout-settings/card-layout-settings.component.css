@@ -4,28 +4,6 @@
   align-items: center;
 }
 
-.btn-layout-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  font-size: 18px;
-  background: #f5f5f5;
-  color: #666;
-  border: 1px solid #d0d0d0;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-  line-height: 1;
-}
-
-.btn-layout-toggle:hover {
-  background: #e8e8e8;
-  color: #333;
-}
-
 /* Panel drops down absolutely so it doesn't push the generate row */
 .settings-panel {
   position: absolute;
@@ -102,37 +80,7 @@
 .bg-controls {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.btn-browse-bg {
-  padding: 5px 12px;
-  font-size: 13px;
-  background: #4a90d9;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.btn-browse-bg:hover {
-  background: #357abd;
-}
-
-.btn-clear-bg {
-  padding: 5px 10px;
-  font-size: 12px;
-  background: none;
-  color: #c0392b;
-  border: 1px solid #c0392b;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.btn-clear-bg:hover {
-  background: #fdecea;
+  gap: 4px;
 }
 
 /* Preview */

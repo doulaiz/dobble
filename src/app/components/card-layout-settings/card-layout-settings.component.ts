@@ -1,10 +1,13 @@
 import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { LucideAngularModule } from 'lucide-angular';
 import { CardLayout } from '../../classes/card-layout';
 import { pickFile } from '../../utils/pick-file';
 
 @Component({
   selector: 'app-card-layout-settings',
   standalone: true,
+  imports: [MatButtonModule, LucideAngularModule],
   templateUrl: './card-layout-settings.component.html',
   styleUrl: './card-layout-settings.component.css'
 })

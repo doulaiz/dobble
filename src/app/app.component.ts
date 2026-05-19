@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { CardPreviewComponent } from './components/card-preview/card-preview.component';
 import { ExportPanelComponent } from './components/export-panel/export-panel.component';
 import { ModeSelectorComponent } from './components/mode-selector/mode-selector.component';
@@ -16,6 +17,7 @@ import { Card, requiredImagesForMode } from './utils/dobble.utils';
    styleUrls: ['./app.component.css'],
    standalone: true,
    imports: [
+      MatButtonModule,
       ModeSelectorComponent,
       CardPreviewComponent,
       ExportPanelComponent,

@@ -43,7 +43,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
+  padding: 10px 12px 10px 20px;
   border-bottom: 1px solid #eaeaea;
   background: #fafafa;
   flex-shrink: 0;
@@ -58,19 +58,10 @@
 }
 
 .btn-close {
-  background: none;
-  border: none;
-  font-size: 1rem;
   color: #999;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  line-height: 1;
-  transition: background 0.15s, color 0.15s;
 }
 
 .btn-close:hover {
-  background: #f0f0f0;
   color: #333;
 }
 
@@ -117,9 +108,8 @@ image-cropper ::ng-deep .ngx-ic-cropper {
 }
 
 .placeholder-icon {
-  font-size: 2.5rem;
   margin-bottom: 12px;
-  opacity: 0.4;
+  opacity: 0.35;
 }
 
 .placeholder-content p {
@@ -212,58 +202,14 @@ image-cropper ::ng-deep .ngx-ic-cropper {
   gap: 8px;
 }
 
+.btn-browse {
+  width: 100%;
+  gap: 6px;
+}
+
 .action-buttons {
   display: flex;
   gap: 8px;
-}
-
-.btn {
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.84rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
-}
-
-.btn:active {
-  transform: scale(0.96);
-}
-
-/* Browse */
-.btn-browse {
-  width: 100%;
-  background: #fff;
-  border: 1px solid #d0d0d0;
-  color: #333;
-}
-
-.btn-browse:hover {
-  background: #f5f5f5;
-  border-color: #bbb;
-}
-
-/* Cancel */
-.btn-cancel {
-  flex: 1;
-  background: #efefef;
-  color: #555;
-}
-
-.btn-cancel:hover {
-  background: #e4e4e4;
-}
-
-/* OK / confirm */
-.btn-ok {
-  flex: 1;
-  background: #4f80ff;
-  color: #fff;
-  box-shadow: 0 2px 6px rgba(79, 128, 255, 0.35);
-}
-
-.btn-ok:hover {
-  background: #3d6fe8;
-  box-shadow: 0 3px 12px rgba(79, 128, 255, 0.45);
+  justify-content: flex-end;
+  align-items: center;
 }

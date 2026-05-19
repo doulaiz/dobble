@@ -13,14 +13,14 @@
     <span class="images-section-title">Images</span>
     @if (!showResetConfirm) {
       <div class="header-actions">
-        <button class="btn-fill-defaults" (click)="fillWithDefaults()">Fill with defaults</button>
-        <button class="btn-reset-trigger" (click)="showResetConfirm = true">Start from scratch</button>
+        <button mat-button color="primary" (click)="fillWithDefaults()">Fill with defaults</button>
+        <button mat-button color="warn" (click)="showResetConfirm = true">Start from scratch</button>
       </div>
     } @else {
       <div class="reset-confirm">
         <span>Delete all images?</span>
-        <button class="btn-confirm-yes" (click)="resetAll()">Yes, delete</button>
-        <button class="btn-confirm-no" (click)="showResetConfirm = false">Cancel</button>
+        <button mat-flat-button color="warn" (click)="resetAll()">Yes, delete</button>
+        <button mat-button (click)="showResetConfirm = false">Cancel</button>
       </div>
     }
   </div>
@@ -38,6 +38,8 @@
   <!-- Generate Cards -->
   <div class="generate-section">
     <button
+      mat-flat-button
+      color="primary"
       class="btn-generate"
       [disabled]="!imagesReady"
       (click)="generateCards()">

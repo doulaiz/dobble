@@ -5,7 +5,9 @@
       <!-- Header -->
       <div class="modal-header">
         <h2 class="modal-title">Edit Image</h2>
-        <button class="btn-close" (click)="cancelModal()">✕</button>
+        <button mat-icon-button class="btn-close" (click)="cancelModal()" aria-label="Close">
+          <lucide-icon name="x" [size]="18" />
+        </button>
       </div>
 
       <div class="modal-body">
@@ -30,7 +32,9 @@
           } @else {
             <div class="image-placeholder">
               <div class="placeholder-content">
-                <div class="placeholder-icon">↑</div>
+                <div class="placeholder-icon">
+                  <lucide-icon name="upload" [size]="48" />
+                </div>
                 <p>No image selected</p>
               </div>
             </div>
@@ -67,10 +71,16 @@
           </div>
 
           <div class="modal-buttons">
-            <button class="btn btn-browse" (click)="openFileBrowser()">Browse image</button>
+            <button mat-stroked-button class="btn-browse" (click)="openFileBrowser()">
+              <lucide-icon name="folder-open" [size]="16" />
+              Browse image
+            </button>
             <div class="action-buttons">
-              <button class="btn btn-cancel" (click)="cancelModal()">Cancel</button>
-              <button class="btn btn-ok" (click)="confirmImage()">OK</button>
+              <button mat-button (click)="cancelModal()">Cancel</button>
+              <button mat-flat-button color="primary" (click)="confirmImage()">
+                <lucide-icon name="check" [size]="16" />
+                OK
+              </button>
             </div>
           </div>
 

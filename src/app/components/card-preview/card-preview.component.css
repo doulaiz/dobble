@@ -61,23 +61,16 @@ h2 {
 /* Reshuffle button — visible on card-wrapper hover */
 .card-reshuffle-btn {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.88);
+  top: 2px;
+  right: 2px;
+  --mdc-icon-button-state-layer-size: 36px;
+  width: 36px !important;
+  height: 36px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   color: #555;
-  font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   opacity: 0;
-  transition: opacity 0.15s, transform 0.35s, background 0.15s;
+  transition: opacity 0.15s, transform 0.35s;
   z-index: 10;
 }
 
@@ -92,7 +85,7 @@ h2 {
 }
 
 .card-reshuffle-btn:hover {
-  background: #fff;
+  background: #fff !important;
   color: #222;
   transform: rotate(180deg);
 }

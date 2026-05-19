@@ -1,0 +1,14 @@
+.export-panel {
+  padding: 20px;
+}
+
+h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+  margin: 0 0 16px;
+}
+
+.btn-export {
+  gap: 6px;
+}

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, NgZone, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
 import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
@@ -65,6 +65,11 @@ export class ImageUploaderModalComponent implements OnChanges {
       this.transform = { scale: 1, translateUnit: 'px' };
       this.showModal = true;
       this.loadFromImageState();
+   }
+
+   @HostListener('document:keydown.escape')
+   onEscape() {
+      if (this.showModal) this.cancelModal();
    }
 
    cancelModal() {

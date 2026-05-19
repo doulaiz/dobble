@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, NgZone, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
 import { CardLayout } from '../../classes/card-layout';
@@ -16,6 +16,11 @@ export class CardLayoutSettingsComponent {
   @Output() layoutChange = new EventEmitter<CardLayout>();
 
   showPanel = false;
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.showPanel) this.showPanel = false;
+  }
 
   readonly previewPlaceholders = [0, 1, 2, 3, 4, 5];
 

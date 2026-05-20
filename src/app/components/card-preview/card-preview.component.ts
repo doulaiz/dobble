@@ -91,9 +91,27 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   onSymbolMouseDown(event: MouseEvent, ci: number, ii: number): void {
     event.preventDefault();
+    if (event.ctrlKey || event.shiftKey) {
+      this.resizeImage(ci, ii, event.ctrlKey ? 1.25 : 0.8);
+      return;
+    }
     this.startDrag(event.clientX, event.clientY, ci, ii, event.currentTarget as HTMLElement);
     document.body.style.cursor = 'grabbing';
     document.body.style.userSelect = 'none';
+  }
+
+  private resizeImage(ci: number, ii: number, factor: number): void {
+    const layout = this.cardLayouts[ci]?.[ii];
+    if (!layout) return;
+    const minSize = 16;
+    const maxSize = Math.min(this.contentWidthPx, this.contentHeightPx);
+    const newSize = Math.round(Math.max(minSize, Math.min(maxSize, layout.size * factor)));
+    const newX = Math.max(0, Math.min(this.contentWidthPx - newSize, layout.x));
+    const newY = Math.max(0, Math.min(this.contentHeightPx - newSize, layout.y));
+    this.cardLayouts = this.cardLayouts.map((layouts, c) =>
+      c === ci ? layouts.map((l, i) => i === ii ? { ...l, size: newSize, x: newX, y: newY } : l) : layouts
+    );
+    setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
   }
 
   onSymbolTouchStart(event: TouchEvent, ci: number, ii: number): void {

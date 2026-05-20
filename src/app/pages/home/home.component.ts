@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { CardPreviewComponent } from '../../components/card-preview/card-preview.component';
 import { ExportPanelComponent } from '../../components/export-panel/export-panel.component';
@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   cardLayout: CardLayout = new CardLayout();
   private imageChangedByUser = false;
 
-  constructor(private persistence: PersistenceService) {}
+  constructor(private persistence: PersistenceService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit(): Promise<void> {
     const saved = await this.persistence.load();
@@ -66,6 +66,8 @@ export class HomeComponent implements OnInit {
       } else if (saved.cards?.length) {
         this.cards = saved.cards;
       }
+
+      this.cdr.detectChanges();
     }
   }
 

@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit {
       this.savedCardLayouts = saved.cardLayouts ?? [];
       this.cardLayout = saved.cardLayout ?? new CardLayout();
 
-      const allImages = this.savedImageStates.map(s => s.croppedImage || s.image);
+      const allImages = this.savedImageStates.map(s => s.croppedImage);
       if (
         this.savedImageStates.length === this.requiredImages &&
         allImages.every(img => img)

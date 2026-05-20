@@ -48,7 +48,7 @@ export class ImagesWrapperComponent implements OnChanges {
    }
 
    private checkIfAllImagesAreReady() {
-      const allImages = this.imageStates.map(state => state.croppedImage || state.image);
+      const allImages = this.imageStates.map(state => state.croppedImage);
       if (
          this.imageStates.length === this.requiredImages &&
          this.requiredImages > 0 &&

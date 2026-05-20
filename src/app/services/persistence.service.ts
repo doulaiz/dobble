@@ -5,7 +5,7 @@ import { ImgLayout } from '../classes/img-layout';
 
 type Mode = 4 | 6 | 8;
 
-interface PersistedState {
+export interface PersistedState {
   mode: Mode;
   imageStates: ImageState[];
   cardIndices?: number[][];
@@ -14,20 +14,52 @@ interface PersistedState {
   cardLayouts?: ImgLayout[][];
 }
 
-const STORAGE_KEY = 'dobble_state';
+const DB_NAME = 'dobble_db';
+const DB_VERSION = 1;
+const STORE_NAME = 'state';
+const STATE_KEY = 'dobble_state';
 
 @Injectable({ providedIn: 'root' })
 export class PersistenceService {
-  save(state: PersistedState): void {
+  private dbPromise: Promise<IDBDatabase> | null = null;
+
+  private openDB(): Promise<IDBDatabase> {
+    if (this.dbPromise) return this.dbPromise;
+    this.dbPromise = new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    return this.dbPromise;
+  }
+
+  async save(state: PersistedState): Promise<void> {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const db = await this.openDB();
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(state, STATE_KEY);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
     } catch {}
   }
 
-  load(): PersistedState | null {
+  async load(): Promise<PersistedState | null> {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as PersistedState) : null;
+      const db = await this.openDB();
+      return await new Promise<PersistedState | null>((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const request = tx.objectStore(STORE_NAME).get(STATE_KEY);
+        request.onsuccess = () => resolve((request.result as PersistedState) ?? null);
+        request.onerror = () => reject(request.error);
+      });
     } catch {
       return null;
     }

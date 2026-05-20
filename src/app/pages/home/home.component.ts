@@ -30,7 +30,6 @@ import { version } from '../../../../package.json';
 })
 export class HomeComponent implements OnInit {
   readonly appVersion = version;
-  readonly appVersionName = 'First Release';
 
   mode: 4 | 6 | 8 = 4;
   requiredImages = 13;

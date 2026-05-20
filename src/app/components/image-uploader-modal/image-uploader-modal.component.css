@@ -85,6 +85,8 @@
 
 image-cropper {
   max-height: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 /* Prevent the cropper frame from capturing mouse events so that clicks
@@ -219,11 +221,15 @@ image-cropper ::ng-deep .ngx-ic-cropper {
   align-items: center;
 }
 
-/* ── Mobile: full-screen, stacked layout ─────────────────── */
-@media (max-width: 600px) {
+/* ── Mobile: full-screen, stacked layout ─────────────────────
+   Fires for:
+   • portrait phones  (max-width: 600px)
+   • landscape phones (max-height: 500px) — e.g. iPhone in landscape
+─────────────────────────────────────────────────────────────── */
+@media (max-width: 600px), (max-height: 500px) {
   .modal-overlay {
     align-items: stretch;
-    justify-content: stretch;
+    overflow: hidden;
   }
 
   .modal {
@@ -237,12 +243,17 @@ image-cropper ::ng-deep .ngx-ic-cropper {
   .modal-body {
     flex-direction: column;
     min-height: 0;
-    overflow: auto;
+    /* Allow vertical scroll but never create horizontal scroll,
+       which would push margin-left:auto buttons off-screen. */
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .image-display-area {
     flex: 1;
-    min-height: 220px;
+    /* 150 px leaves comfortable room for the button bar even
+       on short landscape viewports (~390 px tall). */
+    min-height: 150px;
   }
 
   /* Sidebar becomes a compact bottom bar */
@@ -252,11 +263,11 @@ image-cropper ::ng-deep .ngx-ic-cropper {
     border-left: none;
     border-top: 1px solid #eaeaea;
     padding: 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px 20px;
-    align-items: flex-start;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    gap: 8px 12px;
+    align-items: center;
   }
 
   /* Sliders hidden on mobile — use pinch to zoom/rotate instead */
@@ -264,15 +275,17 @@ image-cropper ::ng-deep .ngx-ic-cropper {
     display: none;
   }
 
-  /* Buttons stretch across the full bar width */
+  /* Button bar: browse / delete share a row; action buttons
+     always get their own full-width row so OK is never off-screen. */
   .modal-buttons {
     width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    margin-top: 4px;
-    padding-top: 10px;
-    gap: 6px;
+    margin-top: 0;
+    padding-top: 8px;
+    gap: 8px;
+    border-top: 1px solid #eaeaea;
   }
 
   .btn-browse,
@@ -281,7 +294,10 @@ image-cropper ::ng-deep .ngx-ic-cropper {
     flex-shrink: 0;
   }
 
+  /* Push action buttons to a dedicated row at the end */
   .action-buttons {
-    margin-left: auto;
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    margin-left: 0;
   }
 }

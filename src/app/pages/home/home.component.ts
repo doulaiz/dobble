@@ -10,6 +10,7 @@ import { ImageState } from '../../classes/image-state';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
 import { Card, requiredImagesForMode } from '../../utils/dobble.utils';
+import { version } from '../../../../package.json';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +27,9 @@ import { Card, requiredImagesForMode } from '../../utils/dobble.utils';
   ],
 })
 export class HomeComponent implements OnInit {
+  readonly appVersion = version;
+  readonly appVersionName = 'First Release';
+
   mode: 4 | 6 | 8 = 4;
   requiredImages = 13;
   imagesReady = false;

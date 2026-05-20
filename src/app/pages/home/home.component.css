@@ -114,6 +114,16 @@
   letter-spacing: 0.01em;
 }
 
+.app-footer {
+  margin-top: 40px;
+  padding: 12px 0 4px;
+  border-top: 1px solid #eaeaea;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #aaa;
+  letter-spacing: 0.03em;
+}
+
 @media (max-width: 600px) {
   .hero-title { font-size: 1.8rem; }
   .hero-subtitle { font-size: 0.9375rem; }

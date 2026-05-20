@@ -194,7 +194,9 @@ export class ImageUploaderModalComponent implements OnChanges, OnDestroy {
   async openFileBrowser() {
     // pickFile resolves inside ngZone.run(), so the await continuation is inside Angular's zone.
     // cdr.detectChanges() is still needed so the cropper's internal CD picks up the new image.
-    this.imageBase64 = await pickFile('image/*', this.ngZone);
+    const result = await pickFile('image/*', this.ngZone);
+    if (!result) return;
+    this.imageBase64 = result;
     this.zoom = 1;
     this.rotation = 0;
     this.transform = { scale: 1, translateUnit: 'px' };

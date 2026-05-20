@@ -41,12 +41,6 @@ export class ImagesWrapperComponent implements OnChanges {
     }
   }
 
-  onImageUploaded(event: { index: number; image: string }) {
-    this.imageStates[event.index].image = event.image;
-    this.imageStatesChange.emit([...this.imageStates]);
-    this.checkIfAllImagesAreReady();
-  }
-
   private checkIfAllImagesAreReady() {
     const allImages = this.imageStates.map(state => state.croppedImage);
     if (
@@ -55,6 +49,8 @@ export class ImagesWrapperComponent implements OnChanges {
       allImages.every(img => img)
     ) {
       this.imagesReady.emit(allImages);
+    } else {
+      this.imagesReady.emit([]);
     }
   }
 

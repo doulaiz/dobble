@@ -25,8 +25,18 @@ interface StoredImageState {
   translateV?: number;
 }
 
-interface StoredState extends Omit<PersistedState, 'imageStates'> {
+interface StoredCardLayout {
+  width: number;
+  height: number;
+  marginTop: number;
+  marginLeft: number;
+  backgroundImageRef?: string;  // SHA-256 key into the "files" store
+  backgroundImage?: string;     // legacy v2: inline data URL (migrated on next save)
+}
+
+interface StoredState extends Omit<PersistedState, 'imageStates' | 'cardLayout'> {
   imageStates: StoredImageState[];
+  cardLayout?: StoredCardLayout;
 }
 
 const DB_NAME = 'dobble_db';
@@ -101,35 +111,46 @@ export class PersistenceService {
   }
 
   async save(state: PersistedState): Promise<void> {
-    try {
-      const db = await this.openDB();
+    const db = await this.openDB();
 
-      // Build stored image states: deduplicate raw images into the "files" store.
-      const storedImageStates: StoredImageState[] = [];
-      for (const imgState of state.imageStates) {
-        if (imgState.image) {
-          const fileRef = await this.hashImage(imgState.image);
-          await this.putFile(db, fileRef, imgState.image);
-          storedImageStates.push({ fileRef, croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel, translateH: imgState.translateH, translateV: imgState.translateV });
-        } else {
-          storedImageStates.push({ croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel, translateH: imgState.translateH, translateV: imgState.translateV });
-        }
+    // Build stored image states: deduplicate raw images into the "files" store.
+    const storedImageStates: StoredImageState[] = [];
+    for (const imgState of state.imageStates) {
+      if (imgState.image) {
+        const fileRef = await this.hashImage(imgState.image);
+        await this.putFile(db, fileRef, imgState.image);
+        storedImageStates.push({ fileRef, croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel, translateH: imgState.translateH, translateV: imgState.translateV });
+      } else {
+        storedImageStates.push({ croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel, translateH: imgState.translateH, translateV: imgState.translateV });
       }
+    }
 
-      // Remove files no longer referenced by any image slot.
-      const activeRefs = new Set(
-        storedImageStates.map(s => s.fileRef).filter((r): r is string => r != null)
-      );
-      await this.deleteOrphanedFiles(db, activeRefs);
+    // Store cardLayout.backgroundImage in the "files" store too.
+    let storedCardLayout: StoredCardLayout | undefined;
+    if (state.cardLayout) {
+      const { backgroundImage, ...rest } = state.cardLayout;
+      storedCardLayout = rest;
+      if (backgroundImage) {
+        const bgRef = await this.hashImage(backgroundImage);
+        await this.putFile(db, bgRef, backgroundImage);
+        storedCardLayout.backgroundImageRef = bgRef;
+      }
+    }
 
-      const stored: StoredState = { ...state, imageStates: storedImageStates };
-      await new Promise<void>((resolve, reject) => {
-        const tx = db.transaction(STATE_STORE, 'readwrite');
-        tx.objectStore(STATE_STORE).put(stored, STATE_KEY);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    } catch {}
+    // Remove files no longer referenced by any image slot or the card background.
+    const activeRefs = new Set<string>([
+      ...storedImageStates.map(s => s.fileRef).filter((r): r is string => r != null),
+      ...(storedCardLayout?.backgroundImageRef ? [storedCardLayout.backgroundImageRef] : []),
+    ]);
+    await this.deleteOrphanedFiles(db, activeRefs);
+
+    const stored: StoredState = { ...state, imageStates: storedImageStates, cardLayout: storedCardLayout };
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(STATE_STORE, 'readwrite');
+      tx.objectStore(STATE_STORE).put(stored, STATE_KEY);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
   }
 
   async load(): Promise<PersistedState | null> {
@@ -152,8 +173,22 @@ export class PersistenceService {
         imageStates.push({ image, croppedImage: s.croppedImage, zoomLevel: s.zoomLevel, angleLevel: s.angleLevel, translateH: s.translateH ?? 0, translateV: s.translateV ?? 0 });
       }
 
-      return { ...stored, imageStates };
-    } catch {
+      // Resolve cardLayout.backgroundImageRef back to a data URL.
+      let cardLayout: CardLayout | undefined;
+      if (stored.cardLayout) {
+        const sc = stored.cardLayout;
+        let backgroundImage = '';
+        if (sc.backgroundImageRef) {
+          backgroundImage = (await this.getFile(db, sc.backgroundImageRef)) ?? '';
+        } else if (sc.backgroundImage) {
+          backgroundImage = sc.backgroundImage;  // legacy v2: inline
+        }
+        cardLayout = { width: sc.width, height: sc.height, marginTop: sc.marginTop, marginLeft: sc.marginLeft, backgroundImage };
+      }
+
+      return { mode: stored.mode, imageStates, cardIndices: stored.cardIndices, cards: stored.cards, cardLayout, cardLayouts: stored.cardLayouts };
+    } catch (err) {
+      console.error('[Dobble] Failed to load persisted state:', err);
       return null;
     }
   }

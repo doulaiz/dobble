@@ -82,6 +82,8 @@ export class ExportPanelComponent {
       a.download = 'cards.zip';
       a.click();
       URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('[Dobble] Export failed:', err);
     } finally {
       this.exporting = false;
     }
@@ -98,5 +100,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
-  return new Promise(resolve => canvas.toBlob(blob => resolve(blob!), 'image/png'));
+  return new Promise((resolve, reject) =>
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Failed to render card canvas')), 'image/png')
+  );
 }

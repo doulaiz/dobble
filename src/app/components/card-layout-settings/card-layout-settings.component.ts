@@ -40,12 +40,19 @@ export class CardLayoutSettingsComponent {
   }
 
   update(field: keyof CardLayout, value: number | string) {
+    if (field === 'width' || field === 'height') {
+      value = Math.max(10, Math.min(500, +value || 10));
+    } else if (field === 'marginTop' || field === 'marginLeft') {
+      value = Math.max(0, Math.min(100, +value || 0));
+    }
     this.layout = { ...this.layout, [field]: value };
     this.layoutChange.emit(this.layout);
   }
 
   async browseBackground() {
-    this.update('backgroundImage', await pickFile('image/png,image/jpeg,image/webp', this.ngZone));
+    const result = await pickFile('image/png,image/jpeg,image/webp', this.ngZone);
+    if (!result) return;
+    this.update('backgroundImage', result);
   }
 
   clearBackground() {

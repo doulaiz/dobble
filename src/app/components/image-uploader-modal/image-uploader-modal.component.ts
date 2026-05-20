@@ -41,7 +41,13 @@ export class ImageUploaderModalComponent implements OnChanges {
       this.imageBase64 = original;
       this.zoom = this.imageState.zoomLevel || 1;
       this.rotation = this.imageState.angleLevel || 0;
-      this.transform = { scale: this.zoom, rotate: this.rotation, translateUnit: 'px' };
+      this.transform = {
+        scale: this.zoom,
+        rotate: this.rotation,
+        translateH: this.imageState.translateH,
+        translateV: this.imageState.translateV,
+        translateUnit: 'px',
+      };
     }
   }
 
@@ -134,6 +140,8 @@ export class ImageUploaderModalComponent implements OnChanges {
         croppedImage: finalCrop,
         zoomLevel: this.zoom,
         angleLevel: this.rotation,
+        translateH: this.transform.translateH ?? 0,
+        translateV: this.transform.translateV ?? 0,
       },
     });
     this.cancelModal();

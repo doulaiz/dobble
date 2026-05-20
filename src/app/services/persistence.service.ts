@@ -21,6 +21,8 @@ interface StoredImageState {
   croppedImage: string;
   zoomLevel: number;
   angleLevel: number;
+  translateH?: number;
+  translateV?: number;
 }
 
 interface StoredState extends Omit<PersistedState, 'imageStates'> {
@@ -108,9 +110,9 @@ export class PersistenceService {
         if (imgState.image) {
           const fileRef = await this.hashImage(imgState.image);
           await this.putFile(db, fileRef, imgState.image);
-          storedImageStates.push({ fileRef, croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel });
+          storedImageStates.push({ fileRef, croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel, translateH: imgState.translateH, translateV: imgState.translateV });
         } else {
-          storedImageStates.push({ croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel });
+          storedImageStates.push({ croppedImage: imgState.croppedImage, zoomLevel: imgState.zoomLevel, angleLevel: imgState.angleLevel, translateH: imgState.translateH, translateV: imgState.translateV });
         }
       }
 
@@ -147,7 +149,7 @@ export class PersistenceService {
       for (const s of stored.imageStates) {
         let image = s.image ?? '';  // legacy v1: image stored inline
         if (s.fileRef) image = (await this.getFile(db, s.fileRef)) ?? '';
-        imageStates.push({ image, croppedImage: s.croppedImage, zoomLevel: s.zoomLevel, angleLevel: s.angleLevel });
+        imageStates.push({ image, croppedImage: s.croppedImage, zoomLevel: s.zoomLevel, angleLevel: s.angleLevel, translateH: s.translateH ?? 0, translateV: s.translateV ?? 0 });
       }
 
       return { ...stored, imageStates };

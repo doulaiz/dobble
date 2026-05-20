@@ -9,7 +9,7 @@ import { pickFile } from '../../utils/pick-file';
   standalone: true,
   imports: [MatButtonModule, LucideAngularModule],
   templateUrl: './card-layout-settings.component.html',
-  styleUrl: './card-layout-settings.component.css'
+  styleUrls: ['./card-layout-settings.component.css']
 })
 export class CardLayoutSettingsComponent {
   @Input() layout: CardLayout = new CardLayout();

@@ -10,17 +10,17 @@ import { ExportPanelComponent } from './components/export-panel/export-panel.com
 import { ImagesWrapperComponent } from './components/images-wrapper/images-wrapper.component';
 
 @NgModule({
-   declarations: [],
-   imports: [
-      CardPreviewComponent,
-      ExportPanelComponent,
-      ModeSelectorComponent,
-      ImageItemComponent,
-      ImagesWrapperComponent,
-      BrowserModule,
-      FormsModule
-   ],
-   providers: [],
-   bootstrap: [AppComponent]
+  declarations: [],
+  imports: [
+    CardPreviewComponent,
+    ExportPanelComponent,
+    ModeSelectorComponent,
+    ImageItemComponent,
+    ImagesWrapperComponent,
+    BrowserModule,
+    FormsModule,
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

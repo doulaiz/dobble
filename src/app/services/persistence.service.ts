@@ -90,9 +90,7 @@ export class PersistenceService {
       const keysReq = store.getAllKeys();
       keysReq.onsuccess = () => {
         for (const key of keysReq.result as string[]) {
-          if (!activeRefs.has(key)) {
-            store.delete(key);
-          }
+          if (!activeRefs.has(key)) store.delete(key);
         }
       };
       tx.oncomplete = () => resolve();
@@ -148,9 +146,7 @@ export class PersistenceService {
       const imageStates: ImageState[] = [];
       for (const s of stored.imageStates) {
         let image = s.image ?? '';  // legacy v1: image stored inline
-        if (s.fileRef) {
-          image = (await this.getFile(db, s.fileRef)) ?? '';
-        }
+        if (s.fileRef) image = (await this.getFile(db, s.fileRef)) ?? '';
         imageStates.push({ image, croppedImage: s.croppedImage, zoomLevel: s.zoomLevel, angleLevel: s.angleLevel });
       }
 

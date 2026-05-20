@@ -1,11 +1,11 @@
 <div class="images-wrapper-container">
-   @for (i of counter(requiredImages); track $index; let idx = $index) {
-      <div class="uploader-instance">
-         <app-image-item [index]="idx" [imageState]="imageStates[idx]" (imageItemClick)="onImageItemClick($event); modal.doShowModal()">
-         </app-image-item>
-      </div>
-   }
+  @for (i of counter(requiredImages); track $index; let idx = $index) {
+    <div class="uploader-instance">
+      <app-image-item [index]="idx" [imageState]="imageStates[idx]" (imageItemClick)="onImageItemClick($event); modal.doShowModal()">
+      </app-image-item>
+    </div>
+  }
 
-   <app-image-uploader-modal #modal [index]="selectedImageIndex" [imageState]="selectedImageIndex >= 0 ? imageStates[selectedImageIndex] : emptyImageState" (imageStateChange)="onModalImageStateChange($event)" (modalClosed)="onModalClosed()">
-   </app-image-uploader-modal>
+  <app-image-uploader-modal #modal [index]="selectedImageIndex" [imageState]="selectedImageIndex >= 0 ? imageStates[selectedImageIndex] : emptyImageState" (imageStateChange)="onModalImageStateChange($event)" (modalClosed)="onModalClosed()">
+  </app-image-uploader-modal>
 </div>

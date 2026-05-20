@@ -1,11 +1,11 @@
 <div class="image-item-container">
-   <div class="preview" (click)="onClick($event)">
-      @if (imageState && imageState.croppedImage) {
-         <img class="circle-preview" [src]="imageState.croppedImage" />
-      } @else {
-         <div class="no-image">
-            <lucide-icon name="plus" [size]="32" />
-         </div>
-      }
-   </div>
+  <div class="preview" (click)="onClick($event)">
+    @if (imageState && imageState.croppedImage) {
+      <img class="circle-preview" [src]="imageState.croppedImage" />
+    } @else {
+      <div class="no-image">
+        <lucide-icon name="plus" [size]="32" />
+      </div>
+    }
+  </div>
 </div>

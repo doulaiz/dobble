@@ -93,7 +93,6 @@
 
 .generate-section {
   position: relative;
-  z-index: 10;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -103,8 +102,10 @@
 .layout-settings-anchor {
   position: absolute;
   right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
 }
 
 .btn-generate {

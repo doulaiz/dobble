@@ -4,13 +4,20 @@
   align-items: center;
 }
 
+/* Transparent backdrop: sits above all card content, absorbs clicks */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+}
+
 /* Panel drops down absolutely so it doesn't push the generate row */
 .settings-panel {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
   left: auto;
-  z-index: 100;
+  z-index: 200;
   display: flex;
   flex-direction: row;
   gap: 32px;

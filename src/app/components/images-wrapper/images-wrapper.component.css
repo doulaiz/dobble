@@ -1,14 +1,26 @@
 .images-wrapper-container {
-   display: flex;
-   flex-direction: row;
-   flex-wrap: wrap;
-   align-items: center;
-   justify-content: center;
-   padding: 20px;
-   gap: 10px 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 10px;
 }
 
 .uploader-instance {
-   width: 150px;
-   height: 150px;
+  width: 150px;
+  height: 150px;
+}
+
+@media (max-width: 480px) {
+  .images-wrapper-container {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .uploader-instance {
+    width: 100px;
+    height: 100px;
+  }
 }

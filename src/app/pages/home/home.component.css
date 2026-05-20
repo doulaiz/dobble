@@ -1,10 +1,8 @@
 .hero-header {
-  padding: 2.5rem 0 2rem;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
-  border-bottom: 1px solid #e3eaf3;
   margin: -16px -16px 0;
   padding: 2.5rem 20px 2rem;
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+  border-bottom: 1px solid #e3eaf3;
 }
 
 .hero-dots {
@@ -65,6 +63,34 @@
   border-color: #0288d1;
 }
 
+.images-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 20px 0;
+}
+
+.images-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.reset-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #444;
+}
+
 .generate-section {
   position: relative;
   z-index: 10;
@@ -88,33 +114,24 @@
   letter-spacing: 0.01em;
 }
 
-.images-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 20px 0;
-}
-
-.images-section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #444;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-}
-
-.reset-confirm {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #444;
-}
-
 @media (max-width: 600px) {
   .hero-title { font-size: 1.8rem; }
   .hero-subtitle { font-size: 0.9375rem; }
+
+  /* Stack generate button and settings gear on their own line */
+  .generate-section {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+
+  .layout-settings-anchor {
+    position: static;
+    transform: none;
+  }
+
+  .btn-generate {
+    /* Leave room for the gear icon sitting inline */
+    max-width: calc(100% - 52px);
+  }
 }

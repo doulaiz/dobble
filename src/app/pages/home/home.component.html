@@ -40,7 +40,7 @@
     @if (!showResetConfirm) {
       <div class="header-actions">
         <button mat-button color="primary" (click)="fillWithDefaults()">Fill with defaults</button>
-        <button mat-button color="warn" (click)="showResetConfirm = true">Reset all</button>
+        <button mat-button color="warn" [disabled]="!savedImageStates.length" (click)="showResetConfirm = true">Reset all</button>
       </div>
     } @else {
       <div class="reset-confirm">

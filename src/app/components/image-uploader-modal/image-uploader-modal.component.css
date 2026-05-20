@@ -259,11 +259,9 @@ image-cropper ::ng-deep .ngx-ic-cropper {
     padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Zoom and Rotate sliders sit side by side */
+  /* Sliders hidden on mobile — use pinch to zoom/rotate instead */
   .control-group {
-    flex: 1;
-    min-width: 130px;
-    margin-bottom: 0;
+    display: none;
   }
 
   /* Buttons stretch across the full bar width */

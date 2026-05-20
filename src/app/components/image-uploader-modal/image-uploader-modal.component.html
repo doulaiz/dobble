@@ -13,7 +13,7 @@
       <div class="modal-body">
 
         <!-- Image / Cropper Area -->
-        <div class="image-display-area">
+        <div class="image-display-area" (touchstart)="onImageAreaTouchStart($event)">
           @if (imageBase64) {
             <image-cropper
               [imageBase64]="imageBase64"

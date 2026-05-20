@@ -1,9 +1,16 @@
-import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, NgZone, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
 import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { ImageState } from '../../classes/image-state';
 import { pickFile } from '../../utils/pick-file';
+
+interface TouchPinchState {
+  initialDist: number;
+  initialAngle: number;
+  initialZoom: number;
+  initialRotation: number;
+}
 
 @Component({
   selector: 'app-image-uploader-modal',
@@ -12,7 +19,7 @@ import { pickFile } from '../../utils/pick-file';
   templateUrl: './image-uploader-modal.component.html',
   styleUrls: ['./image-uploader-modal.component.css'],
 })
-export class ImageUploaderModalComponent implements OnChanges {
+export class ImageUploaderModalComponent implements OnChanges, OnDestroy {
   showModal: boolean = false;
   @Input() index: number = 0;
   @Input() imageState: ImageState = new ImageState();
@@ -27,12 +34,21 @@ export class ImageUploaderModalComponent implements OnChanges {
 
   transform: ImageTransform = { scale: 1, translateUnit: 'px' };
 
+  private touchPinch: TouchPinchState | null = null;
+  private readonly boundDocTouchMove = this.onDocTouchMove.bind(this);
+  private readonly boundDocTouchEnd = this.onDocTouchEnd.bind(this);
+
   constructor(private cdr: ChangeDetectorRef, private ngZone: NgZone) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['imageState'] && this.showModal) {
       this.loadFromImageState();
     }
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('touchmove', this.boundDocTouchMove);
+    document.removeEventListener('touchend', this.boundDocTouchEnd);
   }
 
   private loadFromImageState(): void {
@@ -73,6 +89,10 @@ export class ImageUploaderModalComponent implements OnChanges {
     this.transform = { scale: 1, translateUnit: 'px' };
     this.showModal = true;
     this.loadFromImageState();
+    this.ngZone.runOutsideAngular(() => {
+      document.addEventListener('touchmove', this.boundDocTouchMove, { passive: false });
+      document.addEventListener('touchend', this.boundDocTouchEnd);
+    });
   }
 
   deleteImage() {
@@ -90,6 +110,9 @@ export class ImageUploaderModalComponent implements OnChanges {
     this.showModal = false;
     this.imageBase64 = '';
     this.croppedImage = '';
+    this.touchPinch = null;
+    document.removeEventListener('touchmove', this.boundDocTouchMove);
+    document.removeEventListener('touchend', this.boundDocTouchEnd);
     this.modalClosed.emit();
   }
 
@@ -98,6 +121,9 @@ export class ImageUploaderModalComponent implements OnChanges {
   }
 
   onTransformChange(t: ImageTransform) {
+    // Ignore cropper-emitted transforms while a pinch gesture is active —
+    // otherwise the cropper's single-touch pan would overwrite our pinch result.
+    if (this.touchPinch) return;
     this.transform = t;
   }
 
@@ -112,6 +138,57 @@ export class ImageUploaderModalComponent implements OnChanges {
       translateH: tx * Math.cos(dRad) - ty * Math.sin(dRad),
       translateV: tx * Math.sin(dRad) + ty * Math.cos(dRad),
     };
+  }
+
+  onImageAreaTouchStart(event: TouchEvent): void {
+    if (event.touches.length >= 2) {
+      const t1 = event.touches[0];
+      const t2 = event.touches[1];
+      const dx = t2.clientX - t1.clientX;
+      const dy = t2.clientY - t1.clientY;
+      this.touchPinch = {
+        initialDist: Math.hypot(dx, dy),
+        initialAngle: Math.atan2(dy, dx) * 180 / Math.PI,
+        initialZoom: this.zoom,
+        initialRotation: this.rotation,
+      };
+    }
+  }
+
+  private onDocTouchMove(event: TouchEvent): void {
+    if (!this.touchPinch || event.touches.length < 2) return;
+    event.preventDefault();
+    const t1 = event.touches[0];
+    const t2 = event.touches[1];
+    const dx = t2.clientX - t1.clientX;
+    const dy = t2.clientY - t1.clientY;
+    const dist = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    const newZoom = Math.max(1, Math.min(6, this.touchPinch.initialZoom * dist / this.touchPinch.initialDist));
+    const rawRotation = this.touchPinch.initialRotation + (angle - this.touchPinch.initialAngle);
+    const newRotation = Math.round(Math.max(-180, Math.min(180, rawRotation)));
+    const oldRotation = this.transform.rotate ?? 0;
+    const dRad = (newRotation - oldRotation) * Math.PI / 180;
+    const tx = this.transform.translateH ?? 0;
+    const ty = this.transform.translateV ?? 0;
+    this.ngZone.run(() => {
+      this.zoom = newZoom;
+      this.rotation = newRotation;
+      this.transform = {
+        ...this.transform,
+        scale: newZoom,
+        rotate: newRotation,
+        translateH: tx * Math.cos(dRad) - ty * Math.sin(dRad),
+        translateV: tx * Math.sin(dRad) + ty * Math.cos(dRad),
+      };
+      this.cdr.detectChanges();
+    });
+  }
+
+  private onDocTouchEnd(event: TouchEvent): void {
+    if (event.touches.length < 2) {
+      this.touchPinch = null;
+    }
   }
 
   async openFileBrowser() {

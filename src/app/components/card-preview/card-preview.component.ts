@@ -23,6 +23,10 @@ interface PinchState {
   initialDist: number;
   initialSize: number;
   currentSize: number;
+  currentX: number;
+  currentY: number;
+  centerX: number;
+  centerY: number;
   wrapperEl: HTMLElement;
 }
 
@@ -116,8 +120,10 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     const minSize = 16;
     const maxSize = Math.min(this.contentWidthPx, this.contentHeightPx);
     const newSize = Math.round(Math.max(minSize, Math.min(maxSize, layout.size * factor)));
-    const newX = Math.max(0, Math.min(this.contentWidthPx - newSize, layout.x));
-    const newY = Math.max(0, Math.min(this.contentHeightPx - newSize, layout.y));
+    const cx = layout.x + layout.size / 2;
+    const cy = layout.y + layout.size / 2;
+    const newX = Math.max(0, Math.min(this.contentWidthPx - newSize, Math.round(cx - newSize / 2)));
+    const newY = Math.max(0, Math.min(this.contentHeightPx - newSize, Math.round(cy - newSize / 2)));
     this.cardLayouts = this.cardLayouts.map((layouts, c) =>
       c === ci ? layouts.map((l, i) => i === ii ? { ...l, size: newSize, x: newX, y: newY } : l) : layouts
     );
@@ -134,8 +140,11 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       const t1 = event.touches[0];
       const t2 = event.touches[1];
       const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      const size = this.cardLayouts[ci]?.[ii]?.size ?? 0;
-      this.pinch = { ci, ii, initialDist: dist, initialSize: size, currentSize: size, wrapperEl: event.currentTarget as HTMLElement };
+      const layout = this.cardLayouts[ci]?.[ii];
+      const size = layout?.size ?? 0;
+      const centerX = (layout?.x ?? 0) + size / 2;
+      const centerY = (layout?.y ?? 0) + size / 2;
+      this.pinch = { ci, ii, initialDist: dist, initialSize: size, currentSize: size, currentX: layout?.x ?? 0, currentY: layout?.y ?? 0, centerX, centerY, wrapperEl: event.currentTarget as HTMLElement };
       return;
     }
     this.startDrag(event.touches[0].clientX, event.touches[0].clientY, ci, ii, event.currentTarget as HTMLElement);
@@ -203,9 +212,15 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
         const minSize = 16;
         const maxSize = Math.min(this.contentWidthPx, this.contentHeightPx);
         const newSize = Math.round(Math.max(minSize, Math.min(maxSize, this.pinch.initialSize * factor)));
+        const newX = Math.max(0, Math.min(this.contentWidthPx - newSize, Math.round(this.pinch.centerX - newSize / 2)));
+        const newY = Math.max(0, Math.min(this.contentHeightPx - newSize, Math.round(this.pinch.centerY - newSize / 2)));
         this.pinch.currentSize = newSize;
+        this.pinch.currentX = newX;
+        this.pinch.currentY = newY;
         this.pinch.wrapperEl.style.width = newSize + 'px';
         this.pinch.wrapperEl.style.height = newSize + 'px';
+        this.pinch.wrapperEl.style.left = newX + 'px';
+        this.pinch.wrapperEl.style.top = newY + 'px';
       }
       return;
     }
@@ -217,20 +232,17 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   private onTouchEnd(event: TouchEvent): void {
     if (this.pinch) {
       if (event.touches.length < 2) {
-        const { ci, ii, currentSize, wrapperEl } = this.pinch;
+        const { ci, ii, currentSize, currentX, currentY, wrapperEl } = this.pinch;
         wrapperEl.style.width = '';
         wrapperEl.style.height = '';
+        wrapperEl.style.left = '';
+        wrapperEl.style.top = '';
         this.pinch = null;
         this.ngZone.run(() => {
-          const layout = this.cardLayouts[ci]?.[ii];
-          if (layout) {
-            const newX = Math.max(0, Math.min(this.contentWidthPx - currentSize, layout.x));
-            const newY = Math.max(0, Math.min(this.contentHeightPx - currentSize, layout.y));
-            this.cardLayouts = this.cardLayouts.map((layouts, c) =>
-              c === ci ? layouts.map((l, i) => i === ii ? { ...l, size: currentSize, x: newX, y: newY } : l) : layouts
-            );
-            setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
-          }
+          this.cardLayouts = this.cardLayouts.map((layouts, c) =>
+            c === ci ? layouts.map((l, i) => i === ii ? { ...l, size: currentSize, x: currentX, y: currentY } : l) : layouts
+          );
+          setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
         });
       }
       return;

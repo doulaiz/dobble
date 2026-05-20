@@ -14,7 +14,7 @@
                   [style.top.px]="cardLayouts[ci]?.[ii]?.y"
                   [style.width.px]="cardLayouts[ci]?.[ii]?.size"
                   [style.height.px]="cardLayouts[ci]?.[ii]?.size"
-                  title="Drag to move · Ctrl+click to grow · Shift+click to shrink"
+                  title="Drag to move · Ctrl+click to grow · Shift+click to shrink · Pinch to resize"
                   (mousedown)="onSymbolMouseDown($event, ci, ii)"
                   (touchstart)="onSymbolTouchStart($event, ci, ii)">
                   <img class="card-img" [src]="img"

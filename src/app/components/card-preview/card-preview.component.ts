@@ -17,6 +17,15 @@ interface DragState {
   y: number;
 }
 
+interface PinchState {
+  ci: number;
+  ii: number;
+  initialDist: number;
+  initialSize: number;
+  currentSize: number;
+  wrapperEl: HTMLElement;
+}
+
 @Component({
   selector: 'app-card-preview',
   standalone: true,
@@ -33,6 +42,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   cardLayouts: ImgLayout[][] = [];
   reshufflingCards = new Set<number>();
   private drag: DragState | null = null;
+  private pinch: PinchState | null = null;
 
   private readonly boundMouseMove = this.onMouseMove.bind(this);
   private readonly boundMouseUp = this.onMouseUp.bind(this);
@@ -92,7 +102,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   onSymbolMouseDown(event: MouseEvent, ci: number, ii: number): void {
     event.preventDefault();
     if (event.ctrlKey || event.shiftKey) {
-      this.resizeImage(ci, ii, event.ctrlKey ? 1.25 : 0.8);
+      this.resizeImage(ci, ii, event.ctrlKey ? 1.1 : 0.9);
       return;
     }
     this.startDrag(event.clientX, event.clientY, ci, ii, event.currentTarget as HTMLElement);
@@ -116,8 +126,19 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   onSymbolTouchStart(event: TouchEvent, ci: number, ii: number): void {
     event.preventDefault();
-    const touch = event.touches[0];
-    this.startDrag(touch.clientX, touch.clientY, ci, ii, event.currentTarget as HTMLElement);
+    if (event.touches.length >= 2) {
+      if (this.drag) {
+        this.drag.wrapperEl.style.zIndex = '';
+        this.drag = null;
+      }
+      const t1 = event.touches[0];
+      const t2 = event.touches[1];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const size = this.cardLayouts[ci]?.[ii]?.size ?? 0;
+      this.pinch = { ci, ii, initialDist: dist, initialSize: size, currentSize: size, wrapperEl: event.currentTarget as HTMLElement };
+      return;
+    }
+    this.startDrag(event.touches[0].clientX, event.touches[0].clientY, ci, ii, event.currentTarget as HTMLElement);
   }
 
   private startDrag(clientX: number, clientY: number, ci: number, ii: number, wrapperEl: HTMLElement): void {
@@ -172,12 +193,48 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   }
 
   private onTouchMove(event: TouchEvent): void {
+    if (this.pinch) {
+      if (event.touches.length >= 2) {
+        event.preventDefault();
+        const t1 = event.touches[0];
+        const t2 = event.touches[1];
+        const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        const factor = dist / this.pinch.initialDist;
+        const minSize = 16;
+        const maxSize = Math.min(this.contentWidthPx, this.contentHeightPx);
+        const newSize = Math.round(Math.max(minSize, Math.min(maxSize, this.pinch.initialSize * factor)));
+        this.pinch.currentSize = newSize;
+        this.pinch.wrapperEl.style.width = newSize + 'px';
+        this.pinch.wrapperEl.style.height = newSize + 'px';
+      }
+      return;
+    }
     if (!this.drag) return;
     event.preventDefault();
     this.moveDrag(event.touches[0].clientX, event.touches[0].clientY);
   }
 
-  private onTouchEnd(): void {
+  private onTouchEnd(event: TouchEvent): void {
+    if (this.pinch) {
+      if (event.touches.length < 2) {
+        const { ci, ii, currentSize, wrapperEl } = this.pinch;
+        wrapperEl.style.width = '';
+        wrapperEl.style.height = '';
+        this.pinch = null;
+        this.ngZone.run(() => {
+          const layout = this.cardLayouts[ci]?.[ii];
+          if (layout) {
+            const newX = Math.max(0, Math.min(this.contentWidthPx - currentSize, layout.x));
+            const newY = Math.max(0, Math.min(this.contentHeightPx - currentSize, layout.y));
+            this.cardLayouts = this.cardLayouts.map((layouts, c) =>
+              c === ci ? layouts.map((l, i) => i === ii ? { ...l, size: currentSize, x: newX, y: newY } : l) : layouts
+            );
+            setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+          }
+        });
+      }
+      return;
+    }
     this.endDrag();
   }
 

@@ -283,6 +283,7 @@ image-cropper ::ng-deep .ngx-ic-cropper {
     flex-wrap: wrap;
     align-items: center;
     margin-top: 0;
+    margin-right: 25px;
     padding-top: 8px;
     gap: 8px;
     border-top: 1px solid #eaeaea;

@@ -151,7 +151,9 @@
     max-width: 100%;
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 20px;
     padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
     max-height: 85vh;
@@ -162,6 +164,6 @@
     flex-direction: row;
     align-items: center;
     gap: 16px;
-    width: 100%;
+    width: auto;
   }
 }

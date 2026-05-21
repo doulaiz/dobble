@@ -1,6 +1,6 @@
 <div class="layout-settings">
 
-  <button mat-icon-button class="btn-layout-toggle" (click)="showPanel = !showPanel" title="Card layout settings">
+  <button mat-icon-button class="btn-layout-toggle" (click)="showPanel = !showPanel" [title]="t().preview">
     <lucide-icon name="settings" [size]="20" />
   </button>
 
@@ -16,7 +16,7 @@
       <div class="settings-form">
 
         <div class="field-row">
-          <label class="field-label">Width</label>
+          <label class="field-label">{{ t().width }}</label>
           <div class="input-unit">
             <input type="number" min="10" max="500" class="field-input"
               [value]="layout.width"
@@ -26,7 +26,7 @@
         </div>
 
         <div class="field-row">
-          <label class="field-label">Height</label>
+          <label class="field-label">{{ t().height }}</label>
           <div class="input-unit">
             <input type="number" min="10" max="500" class="field-input"
               [value]="layout.height"
@@ -36,7 +36,7 @@
         </div>
 
         <div class="field-row">
-          <label class="field-label">Margin vertical</label>
+          <label class="field-label">{{ t().marginVertical }}</label>
           <div class="input-unit">
             <input type="number" min="0" max="100" class="field-input"
               [value]="layout.marginTop"
@@ -46,7 +46,7 @@
         </div>
 
         <div class="field-row">
-          <label class="field-label">Margin horizontal</label>
+          <label class="field-label">{{ t().marginHorizontal }}</label>
           <div class="input-unit">
             <input type="number" min="0" max="100" class="field-input"
               [value]="layout.marginLeft"
@@ -56,16 +56,16 @@
         </div>
 
         <div class="field-row field-row--bg">
-          <label class="field-label">Background</label>
+          <label class="field-label">{{ t().background }}</label>
           <div class="bg-controls">
             <button mat-stroked-button (click)="browseBackground()">
               <lucide-icon name="folder-open" [size]="15" />
-              Browse PNG
+              {{ t().browsePng }}
             </button>
             @if (layout.backgroundImage) {
               <button mat-button color="warn" (click)="clearBackground()">
                 <lucide-icon name="x" [size]="14" />
-                Remove
+                {{ t().remove }}
               </button>
             }
           </div>
@@ -75,7 +75,7 @@
 
       <!-- Preview -->
       <div class="settings-preview">
-        <div class="preview-label-top">Preview</div>
+        <div class="preview-label-top">{{ t().preview }}</div>
         <div class="preview-card"
           [style.width.px]="previewCardWidth"
           [style.height.px]="previewCardHeight"

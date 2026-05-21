@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
 import { Card, MM_TO_PX } from '../../utils/dobble.utils';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-export-panel',
@@ -18,6 +19,8 @@ export class ExportPanelComponent {
   @Input() cardLayout: CardLayout = new CardLayout();
 
   exporting = false;
+
+  readonly t = inject(LanguageService).t;
 
   async exportImages() {
     if (!this.cards.length) return;

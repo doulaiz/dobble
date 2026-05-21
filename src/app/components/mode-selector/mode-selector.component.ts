@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { MatRadioModule } from '@angular/material/radio';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-mode-selector',
@@ -13,6 +14,8 @@ export class ModeSelectorComponent {
   @Output() modeChange = new EventEmitter<4 | 6 | 8>();
 
   selected: 4 | 6 | 8 = 4;
+
+  readonly t = inject(LanguageService).t;
 
   selectMode(mode: 4 | 6 | 8) {
     this.selected = mode;

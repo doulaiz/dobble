@@ -27,10 +27,17 @@
 }
 
 .hero-header {
+  position: relative;
   margin: -16px -16px 0;
   padding: 2.5rem 20px 2rem;
   background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
   border-bottom: 1px solid #e3eaf3;
+}
+
+.lang-switcher-anchor {
+  position: absolute;
+  top: 14px;
+  right: 16px;
 }
 
 .hero-dots {

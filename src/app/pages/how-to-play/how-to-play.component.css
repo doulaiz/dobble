@@ -25,7 +25,14 @@
 .back-link:hover { color: #01579b; }
 
 .page-header {
+  position: relative;
   margin-bottom: 2.5rem;
+}
+
+.lang-switcher-anchor {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .header-dots {

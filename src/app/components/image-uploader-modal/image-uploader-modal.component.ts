@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, inject, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
 import { ImageCropperComponent, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
 import { ImageState } from '../../classes/image-state';
 import { pickFile } from '../../utils/pick-file';
+import { LanguageService } from '../../services/language.service';
 
 interface TouchPinchState {
   initialDist: number;
@@ -20,6 +21,8 @@ interface TouchPinchState {
   styleUrls: ['./image-uploader-modal.component.css'],
 })
 export class ImageUploaderModalComponent implements OnChanges, OnDestroy {
+  readonly t = inject(LanguageService).t;
+
   showModal: boolean = false;
   @Input() index: number = 0;
   @Input() imageState: ImageState = new ImageState();

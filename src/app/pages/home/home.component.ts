@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { CardPreviewComponent } from '../../components/card-preview/card-preview.component';
@@ -7,6 +7,8 @@ import { ModeSelectorComponent } from '../../components/mode-selector/mode-selec
 import { ImagesWrapperComponent } from '../../components/images-wrapper/images-wrapper.component';
 import { CardLayoutSettingsComponent } from '../../components/card-layout-settings/card-layout-settings.component';
 import { PersistenceService, PersistedState } from '../../services/persistence.service';
+import { LanguageService } from '../../services/language.service';
+import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher.component';
 import { ImageState } from '../../classes/image-state';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
@@ -25,7 +27,8 @@ import { version } from '../../../../package.json';
     CardPreviewComponent,
     ExportPanelComponent,
     ImagesWrapperComponent,
-    CardLayoutSettingsComponent
+    CardLayoutSettingsComponent,
+    LanguageSwitcherComponent,
   ],
 })
 export class HomeComponent implements OnInit {
@@ -44,7 +47,11 @@ export class HomeComponent implements OnInit {
   cardLayout: CardLayout = new CardLayout();
   private imageChangedByUser = false;
 
-  constructor(private persistence: PersistenceService, private cdr: ChangeDetectorRef) {}
+  private readonly persistence = inject(PersistenceService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly langService = inject(LanguageService);
+
+  readonly t = this.langService.t;
 
   private saveState(state: PersistedState): void {
     this.persistence.save(state).catch(err => {

@@ -2,13 +2,14 @@
 
   @if (saveError) {
     <div class="save-error-banner" role="alert">
-      <span>Auto-save failed — your changes may not be preserved after a page refresh.</span>
+      <span>{{ t().autoSaveError }}</span>
       <button class="save-error-dismiss" (click)="saveError = false" aria-label="Dismiss">✕</button>
     </div>
   }
 
   <!-- Hero Header -->
   <header class="hero-header">
+    <app-language-switcher class="lang-switcher-anchor"></app-language-switcher>
     <div class="hero-dots" aria-hidden="true">
       <span class="dot dot-red"></span>
       <span class="dot dot-blue"></span>
@@ -16,11 +17,8 @@
       <span class="dot dot-yellow"></span>
       <span class="dot dot-purple"></span>
     </div>
-    <h1 class="hero-title">Dobble Card Creator</h1>
-    <p class="hero-subtitle">
-      Upload your own images, generate a custom card deck,
-      and export it print-ready in seconds.
-    </p>
+    <h1 class="hero-title">{{ t().heroTitle }}</h1>
+    <p class="hero-subtitle">{{ t().heroSubtitle }}</p>
     <a class="how-to-play-link" routerLink="how-to-play">
       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
            fill="none" stroke="currentColor" stroke-width="2"
@@ -29,7 +27,7 @@
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
         <path d="M12 17h.01"/>
       </svg>
-      How to play Dobble?
+      {{ t().howToPlayLink }}
     </a>
   </header>
 
@@ -43,17 +41,17 @@
 
   <!-- Image Section Header -->
   <div class="images-section-header">
-    <span class="images-section-title">Images — {{ requiredImages }} needed</span>
+    <span class="images-section-title">{{ t().imagesNeeded(requiredImages) }}</span>
     @if (!showResetConfirm) {
       <div class="header-actions">
-        <button mat-button color="primary" (click)="fillWithDefaults()">Fill with defaults</button>
-        <button mat-button color="warn" [disabled]="!savedImageStates.length" (click)="showResetConfirm = true">Reset all</button>
+        <button mat-button color="primary" (click)="fillWithDefaults()">{{ t().fillWithDefaults }}</button>
+        <button mat-button color="warn" [disabled]="!savedImageStates.length" (click)="showResetConfirm = true">{{ t().resetAll }}</button>
       </div>
     } @else {
       <div class="reset-confirm">
-        <span>Delete all images?</span>
-        <button mat-flat-button color="warn" (click)="resetAll()">Yes, delete</button>
-        <button mat-button (click)="showResetConfirm = false">Cancel</button>
+        <span>{{ t().deleteAllImages }}</span>
+        <button mat-flat-button color="warn" (click)="resetAll()">{{ t().yesDelete }}</button>
+        <button mat-button (click)="showResetConfirm = false">{{ t().cancel }}</button>
       </div>
     }
   </div>
@@ -76,7 +74,7 @@
       class="btn-generate"
       [disabled]="!imagesReady"
       (click)="generateCards()">
-      {{ cards.length ? 'Reshuffle all the cards' : 'Generate the ' + requiredImages + ' Cards' }}
+      {{ cards.length ? t().reshuffleCards : t().generateCards(requiredImages) }}
     </button>
     <div class="layout-settings-anchor">
       <app-card-layout-settings
@@ -108,7 +106,7 @@
   }
 
   <footer class="app-footer">
-    v{{ appVersion }} &nbsp;&bull;&nbsp; Fair use license &copy; 2026 R. Deleuze
+    v{{ appVersion }} &nbsp;&bull;&nbsp; {{ t().footer }}
   </footer>
 
 </div>

@@ -2,6 +2,7 @@
   <div class="container">
 
     <header class="page-header">
+      <app-language-switcher class="lang-switcher-anchor"></app-language-switcher>
       <div class="header-dots" aria-hidden="true">
         <span class="dot dot-red"></span>
         <span class="dot dot-blue"></span>
@@ -9,100 +10,39 @@
         <span class="dot dot-yellow"></span>
         <span class="dot dot-purple"></span>
       </div>
-      <h1>How to Play Dobble</h1>
-      <p class="lead">
-        Dobble is a fast-paced visual observation game
-        for 2–8 players, ages 7 and up. A round lasts about 15 minutes.
-      </p>
+      <h1>{{ t().howToPlayPageTitle }}</h1>
+      <p class="lead">{{ t().howToPlayLead }}</p>
     </header>
 
     <section>
-      <h2>The Golden Rule</h2>
+      <h2>{{ t().goldenRuleTitle }}</h2>
       <div class="highlight-box">
-        <strong>Any two cards in the deck share exactly one matching symbol</strong> — same shape
-        and color, but possibly a different size. This is always true, for every pair.
+        {{ t().goldenRuleText }}
       </div>
     </section>
 
     <section>
-      <h2>Five Mini-Games</h2>
-      <p class="section-intro">
-        All five mini-games share the same core mechanic — find the one matching symbol between
-        two cards and call it out. What changes between games is the objective and how cards are
-        won or lost.
-      </p>
+      <h2>{{ t().fiveMiniGamesTitle }}</h2>
+      <p class="section-intro">{{ t().fiveMiniGamesIntro }}</p>
 
       <div class="games-grid">
-
-        <div class="game-card">
-          <div class="game-badge">1</div>
-          <h3>The Tower</h3>
-          <p class="goal"><strong>Goal:</strong> Collect the most cards.</p>
-          <ol>
-            <li>Deal one card face-down to each player. Stack the rest face-up in the center.</li>
-            <li>Everyone flips their card at the same time.</li>
-            <li>Race to spot the symbol shared between your card and the top of the center pile.</li>
-            <li>Call it out — take that center card and place it on top of yours.</li>
-            <li>All players now compare their new top card against the next center card.</li>
-            <li>When the center pile runs out, the player with the most cards wins.</li>
-          </ol>
-        </div>
-
-        <div class="game-card">
-          <div class="game-badge">2</div>
-          <h3>The Well</h3>
-          <p class="goal"><strong>Goal:</strong> Be the first to discard all your cards.</p>
-          <ol>
-            <li>Stack all cards face-up in the center. Deal 5 cards face-down to each player.</li>
-            <li>Everyone races to match their top card against the center pile's top card.</li>
-            <li>Call out the match — discard your card onto the center pile.</li>
-            <li>First player to empty their hand wins.</li>
-          </ol>
-        </div>
-
-        <div class="game-card">
-          <div class="game-badge">3</div>
-          <h3>Poisoned Gift</h3>
-          <p class="goal"><strong>Goal:</strong> End up with the fewest cards.</p>
-          <ol>
-            <li>Deal all cards face-down to players. Flip one to start a central discard pile.</li>
-            <li>Find the symbol that matches between <em>another player's</em> top card and the center card.</li>
-            <li>Call it out — pass your top card to that player as an unwanted "gift".</li>
-            <li>When all cards are distributed, the player with the fewest cards wins.</li>
-          </ol>
-        </div>
-
-        <div class="game-card">
-          <div class="game-badge">4</div>
-          <h3>Catch Them All</h3>
-          <p class="goal"><strong>Goal:</strong> Collect the most cards from the table.</p>
-          <ol>
-            <li>Spread several cards face-up in a ring around a draw pile in the center.</li>
-            <li>Each player holds one card and races to match it against any card in the ring.</li>
-            <li>Call out the match — claim that ring card and place it on your pile.</li>
-            <li>Flip a new card from the draw pile to refill the ring.</li>
-            <li>Most cards collected at the end wins.</li>
-          </ol>
-        </div>
-
-        <div class="game-card">
-          <div class="game-badge">5</div>
-          <h3>Hot Potato</h3>
-          <p class="goal"><strong>Goal:</strong> Hold the fewest cards when the pile runs out.</p>
-          <ol>
-            <li>Deal one card to each player. Stack the rest face-up in the center.</li>
-            <li>Find the symbol shared between your card and the top of the center pile.</li>
-            <li>Call it out — pass the center card to any opponent of your choice.</li>
-            <li>That player now holds two cards and must deal with both.</li>
-            <li>Fewest cards in hand when the pile is empty wins.</li>
-          </ol>
-        </div>
-
+        @for (game of t().games; track game.title; let i = $index) {
+          <div class="game-card">
+            <div class="game-badge">{{ i + 1 }}</div>
+            <h3>{{ game.title }}</h3>
+            <p class="goal"><strong>{{ t().goalLabel }}:</strong> {{ game.goal }}</p>
+            <ol>
+              @for (step of game.steps; track step) {
+                <li>{{ step }}</li>
+              }
+            </ol>
+          </div>
+        }
       </div>
     </section>
 
     <footer class="page-footer">
-      <a routerLink="/" class="cta-button">Create Your Own Deck</a>
+      <a routerLink="/" class="cta-button">{{ t().createYourDeck }}</a>
     </footer>
 
   </div>

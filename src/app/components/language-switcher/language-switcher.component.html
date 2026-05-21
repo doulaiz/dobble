@@ -1,0 +1,23 @@
+<div class="lang-switcher">
+  <button
+    class="lang-btn"
+    (click)="toggle($event)"
+    [attr.aria-label]="'Language: ' + current.label"
+    [attr.aria-expanded]="open">
+    <span class="flag">{{ current.flag }}</span>
+  </button>
+
+  @if (open) {
+    <div class="lang-dropdown" role="menu">
+      @for (option of others; track option.lang) {
+        <button
+          class="lang-option"
+          role="menuitem"
+          [attr.aria-label]="option.label"
+          (click)="select(option.lang, $event)">
+          <span class="flag">{{ option.flag }}</span>
+        </button>
+      }
+    </div>
+  }
+</div>

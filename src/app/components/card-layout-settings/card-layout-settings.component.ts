@@ -1,8 +1,9 @@
-import { Component, EventEmitter, HostListener, Input, NgZone, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, inject, Input, NgZone, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
 import { CardLayout } from '../../classes/card-layout';
 import { pickFile } from '../../utils/pick-file';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-card-layout-settings',
@@ -16,6 +17,8 @@ export class CardLayoutSettingsComponent {
   @Output() layoutChange = new EventEmitter<CardLayout>();
 
   showPanel = false;
+
+  readonly t = inject(LanguageService).t;
 
   @HostListener('document:keydown.escape')
   onEscape() {

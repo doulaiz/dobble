@@ -1,5 +1,5 @@
 <div class="export-panel">
-  <h2>Export</h2>
+  <h2>{{ t().exportImages }}</h2>
 
   <button
     mat-flat-button
@@ -8,6 +8,6 @@
     [disabled]="!cards || cards.length === 0 || exporting"
     (click)="exportImages()">
     <lucide-icon name="download" [size]="16" />
-    {{ exporting ? 'Exporting…' : 'Export Images' }}
+    {{ exporting ? t().exporting : t().exportImages }}
   </button>
 </div>

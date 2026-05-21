@@ -2,9 +2,9 @@ import { Component, HostListener, inject } from '@angular/core';
 import { Language, LanguageService } from '../../services/language.service';
 
 const LANG_OPTIONS: { lang: Language; flag: string; label: string }[] = [
-  { lang: 'en', flag: '🇺🇸', label: 'English' },
-  { lang: 'fr', flag: '🇫🇷', label: 'Français' },
-  { lang: 'es', flag: '🇨🇴', label: 'Español' },
+  { lang: 'en', flag: 'EN', label: 'English' },
+  { lang: 'fr', flag: 'FR', label: 'Français' },
+  { lang: 'es', flag: 'ES', label: 'Español' },
 ];
 
 @Component({

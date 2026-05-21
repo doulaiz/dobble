@@ -36,6 +36,15 @@
                 <li>{{ step }}</li>
               }
             </ol>
+            @if (game.extra_steps?.length) {
+              
+            <p class="extra-steps"><strong>{{ t().extraStepsLabel }}:</strong> </p>
+              <ol>
+                @for (step of game.extra_steps!; track step) {
+                  <li>{{ step }}</li>
+                }
+              </ol>
+            }
           </div>
         }
       </div>

@@ -12,6 +12,7 @@ h2 {
 .cards-grid {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
 }
 

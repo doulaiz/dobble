@@ -1,12 +1,12 @@
 <div class="layout-settings">
 
-  <button mat-icon-button class="btn-layout-toggle" (click)="showPanel = !showPanel" [title]="t().preview">
+  <button mat-icon-button class="btn-layout-toggle" (click)="onToggleClick($event)" [title]="t().preview">
     <lucide-icon name="settings" [size]="20" />
   </button>
 
   @if (showPanel) {
-    <div class="settings-backdrop" (click)="showPanel = false"></div>
-    <div class="settings-panel">
+    <div class="settings-backdrop"></div>
+    <div class="settings-panel" (click)="$event.stopPropagation()">
 
       <button mat-icon-button class="btn-panel-close" (click)="showPanel = false" aria-label="Close settings">
         <lucide-icon name="x" [size]="18" />
@@ -107,16 +107,17 @@
           [style.background-position]="'center'"
           (click)="cycleShape()"
           title="Click to change shape">
-          <div class="preview-margin-area"
-            [ngStyle]="previewMarginStyle"
-            [style.top.px]="previewMarginTop"
-            [style.left.px]="previewMarginLeft"
-            [style.right.px]="previewMarginLeft"
-            [style.bottom.px]="previewMarginTop">
-            @for (i of previewPlaceholders; track i) {
-              <div class="preview-circle"></div>
-            }
-          </div>
+          <div class="preview-margin-area" [ngStyle]="previewMarginStyle"></div>
+          @if (hexagonMarginSvgPoints; as pts) {
+            <svg [attr.width]="previewCardWidth" [attr.height]="previewCardHeight"
+                 style="position:absolute;top:0;left:0;pointer-events:none;overflow:visible">
+              <polygon [attr.points]="pts"
+                       fill="none"
+                       stroke="rgba(74, 144, 217, 0.7)"
+                       stroke-width="1.5"
+                       stroke-dasharray="4 3" />
+            </svg>
+          }
         </div>
         <div class="preview-shape-label">{{ shapeLabel }}</div>
         <div class="preview-dims">

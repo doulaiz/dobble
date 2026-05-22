@@ -11,3 +11,10 @@ lucide-icon, lucide-angular, i-lucide {
   align-items: center;
   justify-content: center;
 }
+
+/* Prevent Angular Material's injected overlay spans from intercepting pointer events */
+.mat-focus-indicator,
+.mat-mdc-button-touch-target,
+.mat-mdc-button-state-layer {
+  pointer-events: none !important;
+}

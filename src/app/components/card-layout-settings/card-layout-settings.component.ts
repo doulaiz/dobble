@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, inject, Input, NgZone, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, inject, Input, NgZone, Output } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
@@ -30,13 +30,31 @@ export class CardLayoutSettingsComponent {
   readonly t = inject(LanguageService).t;
 
   @HostListener('document:keydown.escape')
-  onEscape() {
+  onEscape() { if (this.showPanel) this.showPanel = false; }
+
+  @HostListener('document:click')
+  onDocumentClick() {
     if (this.showPanel) this.showPanel = false;
   }
 
-  readonly previewPlaceholders = [0, 1, 2, 3, 4, 5];
+  onToggleClick(event: MouseEvent) {
+    event.stopPropagation(); // keep this out of onDocumentClick
+    if (!this.showPanel) {
+      this.showPanel = true;
+      return;
+    }
+    // When panel is open, only close if the tap is within the button's visual bounds.
+    // Material injects spans (mat-focus-indicator, mat-mdc-button-touch-target) that
+    // extend beyond the button on mobile; taps on those spans should not close the panel.
+    const btn = event.currentTarget as HTMLElement;
+    const r = btn.getBoundingClientRect();
+    if (event.clientX >= r.left && event.clientX <= r.right &&
+        event.clientY >= r.top  && event.clientY <= r.bottom) {
+      this.showPanel = false;
+    }
+  }
 
-  constructor(private ngZone: NgZone) {}
+  constructor(private ngZone: NgZone, private elementRef: ElementRef) {}
 
   get shape(): CardShape { return this.layout.shape || 'rectangle'; }
   get shapeLabel(): string { return SHAPE_LABELS[this.shape]; }
@@ -64,8 +82,30 @@ export class CardLayoutSettingsComponent {
     return s;
   }
   get previewMarginStyle(): Record<string, string> {
-    if (this.isRound) return { borderRadius: '50%' };
-    return {};
+    const mt = this.previewMarginTop;
+    const ml = this.previewMarginLeft;
+    if (this.shape === 'hexagon') return { display: 'none' };
+    if (this.shape === 'circle') {
+      return { borderRadius: '50%', top: `${mt}px`, left: `${ml}px`, right: `${ml}px`, bottom: `${mt}px` };
+    }
+    return { top: `${mt}px`, left: `${ml}px`, right: `${ml}px`, bottom: `${mt}px` };
+  }
+
+  get hexagonMarginSvgPoints(): string | null {
+    if (this.shape !== 'hexagon') return null;
+    const mt = this.previewMarginTop;
+    const innerW = Math.max(0, this.previewCardWidth - mt * 4 / Math.sqrt(3));
+    const innerH = innerW * Math.sqrt(3) / 2;
+    const ox = (this.previewCardWidth - innerW) / 2;
+    const oy = (this.previewCardHeight - innerH) / 2;
+    return [
+      [ox + innerW * 0.25, oy],
+      [ox + innerW * 0.75, oy],
+      [ox + innerW,        oy + innerH * 0.5],
+      [ox + innerW * 0.75, oy + innerH],
+      [ox + innerW * 0.25, oy + innerH],
+      [ox,                 oy + innerH * 0.5],
+    ].map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
   }
 
   cycleShape() {

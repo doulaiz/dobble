@@ -78,7 +78,7 @@ const en: AppTranslations = {
   autoSaveError: 'Auto-save failed — your changes may not be preserved after a page refresh.',
   deleteAllImages: 'Delete all images?',
   yesDelete: 'Yes, delete',
-  generateCards: (n) => `Generate the ${n} Cards`,
+  generateCards: (n) => `Generate the ${n} cards`,
   reshuffleCards: 'Reshuffle all the cards',
   footer: 'Fair use license © 2026 R. Deleuze',
 
@@ -210,7 +210,7 @@ const fr: AppTranslations = {
   yesDelete: 'Oui, supprimer',
   generateCards: (n) => `Générer les ${n} cartes`,
   reshuffleCards: 'Rebattre toutes les cartes',
-  footer: "Licence d'utilisation équitable © 2026 R. Deleuze",
+  footer: "Fair use license © 2026 R. Deleuze",
 
   imagesPerCard: "Nombre d'images par carte",
 
@@ -340,7 +340,7 @@ const es: AppTranslations = {
   yesDelete: 'Sí, eliminar',
   generateCards: (n) => `Generar las ${n} cartas`,
   reshuffleCards: 'Mezclar todas las cartas',
-  footer: 'Licencia de uso justo © 2026 R. Deleuze',
+  footer: 'Fair use license © 2026 R. Deleuze',
 
   imagesPerCard: 'Número de imágenes por carta',
 

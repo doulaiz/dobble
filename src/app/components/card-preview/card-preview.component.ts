@@ -334,6 +334,22 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   get marginDiscStyle(): Record<string, string> | null {
     if (this.shape === 'rectangle' || !!this.cardLayout.backgroundImage) return null;
+    if (this.shape === 'hexagon') {
+      const margin = this.mm(this.cardLayout.marginTop);
+      const innerW = Math.max(0, this.cardWidthPx - margin * 4 / Math.sqrt(3));
+      const innerH = innerW * Math.sqrt(3) / 2;
+      return {
+        position: 'absolute',
+        width: `${innerW}px`,
+        height: `${innerH}px`,
+        left: `${(this.cardWidthPx - innerW) / 2}px`,
+        top: `${(this.cardHeightPx - innerH) / 2}px`,
+        clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)',
+        background: 'white',
+        pointerEvents: 'none',
+      };
+    }
+    // circle
     const r = this.placementRadiusPx!;
     const size = r * 2;
     return {

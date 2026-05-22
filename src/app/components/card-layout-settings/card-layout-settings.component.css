@@ -11,10 +11,11 @@
   z-index: 199;
 }
 
-/* Panel drops down absolutely so it doesn't push the generate row */
+/* Panel opens upward so it doesn't overlap the cards section below */
 .settings-panel {
   position: absolute;
-  top: calc(100% + 10px);
+  bottom: calc(100% + 10px);
+  top: auto;
   right: 0;
   left: auto;
   z-index: 200;
@@ -127,7 +128,6 @@
   background-color: #e8e8e8;
   border: 1px solid #bbb;
   border-radius: 4px;
-  overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   transition: box-shadow 0.15s;
@@ -146,21 +146,6 @@
 .preview-margin-area {
   position: absolute;
   border: 1.5px dashed rgba(74, 144, 217, 0.7);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 3px;
-}
-
-.preview-circle {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(74, 144, 217, 0.35);
-  border: 1px solid rgba(74, 144, 217, 0.5);
-  flex-shrink: 0;
 }
 
 .preview-dims {

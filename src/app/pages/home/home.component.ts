@@ -91,6 +91,11 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  get allImagesFilled(): boolean {
+    return this.savedImageStates.length === this.requiredImages &&
+      this.savedImageStates.every(s => s.image || s.croppedImage);
+  }
+
   fillWithDefaults() {
     const current = Array.from({ length: this.requiredImages }, (_, i) =>
       this.savedImageStates[i] ?? new ImageState()

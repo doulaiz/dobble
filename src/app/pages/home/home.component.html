@@ -44,7 +44,9 @@
     <span class="images-section-title">{{ t().imagesNeeded(requiredImages) }}</span>
     @if (!showResetConfirm) {
       <div class="header-actions">
-        <button mat-button color="primary" (click)="fillWithDefaults()">{{ t().fillWithDefaults }}</button>
+        @if (!allImagesFilled) {
+          <button mat-button color="primary" (click)="fillWithDefaults()">{{ t().fillWithDefaults }}</button>
+        }
         <button mat-button color="warn" [disabled]="!savedImageStates.length" (click)="showResetConfirm = true">{{ t().resetAll }}</button>
       </div>
     } @else {

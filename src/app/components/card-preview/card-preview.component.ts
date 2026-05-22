@@ -368,28 +368,29 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     const n = card.length;
     const W = this.contentWidthPx;
     const H = this.contentHeightPx;
-    const PR = this.placementRadiusPx; // null for rectangle
+    const PR = this.placementRadiusPx;
     const isRound = PR !== null;
     const cx = W / 2, cy = H / 2;
 
-    // Base image size fitted to a grid over the available area
+    // Start at ~65% area coverage — feasible for random placement, grow-to-fill will push higher.
     const area = isRound ? Math.PI * PR! * PR! : W * H;
-    const baseSize = Math.sqrt(area / n) / 1.2;
-    const radii = card.map(() => baseSize * (0.7 + Math.random() * 0.6) / 2);
+    const baseRadius = Math.sqrt(0.65 * area / (n * Math.PI));
+    let radii = card.map(() => baseRadius * (0.8 + Math.random() * 0.4));
 
-    // Initial placement: random within the placement region
-    const pos = card.map((_, i) => {
+    const pos: { x: number; y: number }[] = [];
+    for (let i = 0; i < n; i++) {
       if (isRound) {
         const maxR = Math.max(0, PR! - radii[i]);
         const r = maxR * Math.sqrt(Math.random());
-        const a = Math.random() * Math.PI * 2;
-        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+        const a = Math.random() * 2 * Math.PI;
+        pos.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+      } else {
+        pos.push({
+          x: radii[i] + Math.random() * Math.max(0, W - 2 * radii[i]),
+          y: radii[i] + Math.random() * Math.max(0, H - 2 * radii[i]),
+        });
       }
-      return {
-        x: radii[i] + Math.random() * (W - 2 * radii[i]),
-        y: radii[i] + Math.random() * (H - 2 * radii[i]),
-      };
-    });
+    }
 
     const clamp = (i: number) => {
       if (isRound) {
@@ -403,74 +404,58 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       }
     };
 
-    const minGap = 1;
-    const totalIter = 500;
-
-    for (let iter = 0; iter < totalIter; iter++) {
-      const t = 1 - iter / totalIter;
-      const forces = pos.map(() => ({ x: 0, y: 0 }));
-      let hasOverlap = false;
-
-      for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          const dx = pos[i].x - pos[j].x;
-          const dy = pos[i].y - pos[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
-          const minDist = radii[i] + radii[j] + minGap;
-          let push = 0;
-          if (dist < minDist) {
-            push = (minDist - dist) * 0.5;
-            hasOverlap = true;
-          } else if (t > 0.05) {
-            const spreadRange = minDist * (1 + 2 * t);
-            if (dist < spreadRange)
-              push = ((spreadRange - dist) / spreadRange) * t * minDist * 0.35;
-          }
-          if (push > 0) {
-            const nx = dx / dist, ny = dy / dist;
-            forces[i].x += nx * push; forces[i].y += ny * push;
-            forces[j].x -= nx * push; forces[j].y -= ny * push;
-          }
-        }
-      }
-
-      if (t > 0.05) {
+    // Pure repulsion settle — no spreading force so circles stay as dense as possible.
+    // Returns true when all overlaps resolved before maxIter.
+    const settle = (maxIter: number): boolean => {
+      for (let iter = 0; iter < maxIter; iter++) {
+        const fx = new Array(n).fill(0);
+        const fy = new Array(n).fill(0);
+        let hasOverlap = false;
         for (let i = 0; i < n; i++) {
-          if (isRound) {
-            // Repel from circular boundary
-            const dx = pos[i].x - cx, dy = pos[i].y - cy;
+          for (let j = i + 1; j < n; j++) {
+            const dx = pos[i].x - pos[j].x;
+            const dy = pos[i].y - pos[j].y;
             const dist = Math.hypot(dx, dy) || 0.001;
-            const maxR = PR! - radii[i];
-            const wRange = maxR * (1 - 0.3 * (1 - t));
-            if (dist > wRange) {
-              const push = (dist - wRange) * t * 0.7;
-              forces[i].x -= (dx / dist) * push;
-              forces[i].y -= (dy / dist) * push;
+            const need = radii[i] + radii[j];
+            if (dist < need) {
+              const push = (need - dist) * 0.5;
+              const nx = dx / dist, ny = dy / dist;
+              fx[i] += nx * push; fy[i] += ny * push;
+              fx[j] -= nx * push; fy[j] -= ny * push;
+              hasOverlap = true;
             }
-          } else {
-            const wRange = radii[i] * (1 + 2 * t);
-            const strength = t * radii[i] * 0.7;
-            if (pos[i].x < wRange) forces[i].x += (1 - pos[i].x / wRange) * strength;
-            if (W - pos[i].x < wRange) forces[i].x -= (1 - (W - pos[i].x) / wRange) * strength;
-            if (pos[i].y < wRange) forces[i].y += (1 - pos[i].y / wRange) * strength;
-            if (H - pos[i].y < wRange) forces[i].y -= (1 - (H - pos[i].y) / wRange) * strength;
           }
         }
+        for (let i = 0; i < n; i++) { pos[i].x += fx[i]; pos[i].y += fy[i]; clamp(i); }
+        if (!hasOverlap) return true;
       }
+      // Check if residual overlaps exceed tolerance
+      for (let i = 0; i < n; i++)
+        for (let j = i + 1; j < n; j++)
+          if (Math.hypot(pos[i].x - pos[j].x, pos[i].y - pos[j].y) < radii[i] + radii[j] - 0.5)
+            return false;
+      return true;
+    };
 
-      for (let i = 0; i < n; i++) {
-        pos[i].x += forces[i].x;
-        pos[i].y += forces[i].y;
-        clamp(i);
+    settle(600);
+
+    // Grow-to-fill: enlarge all circles 5% per round, re-settle, stop when it no longer fits.
+    for (let round = 0; round < 30; round++) {
+      const prevRadii = radii.slice();
+      const prevPos = pos.map(p => ({ ...p }));
+      radii = radii.map(r => r * 1.05);
+      for (let i = 0; i < n; i++) clamp(i);
+      if (!settle(200)) {
+        radii = prevRadii;
+        for (let i = 0; i < n; i++) { pos[i].x = prevPos[i].x; pos[i].y = prevPos[i].y; }
+        break;
       }
-
-      if (t < 0.02 && !hasOverlap) break;
     }
 
     return card.map((_, i) => ({
-      x: Math.round(pos[i].x - radii[i]),
-      y: Math.round(pos[i].y - radii[i]),
-      size: Math.round(radii[i] * 2),
+      x: pos[i].x - radii[i],
+      y: pos[i].y - radii[i],
+      size: radii[i] * 2,
       rotate: Math.floor(Math.random() * 360),
     }));
   }

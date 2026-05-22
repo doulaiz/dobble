@@ -6,8 +6,12 @@
         <div class="card-wrapper">
           <div class="card" [ngStyle]="cardStyle">
             <div class="card-content"
+              [ngStyle]="contentStyle"
               [style.width.px]="contentWidthPx"
               [style.height.px]="contentHeightPx">
+              @if (marginDiscStyle) {
+                <div [ngStyle]="marginDiscStyle"></div>
+              }
               @for (img of card; track $index; let ii = $index) {
                 <div class="card-img-wrapper"
                   [style.left.px]="cardLayouts[ci]?.[ii]?.x"
@@ -23,6 +27,16 @@
               }
             </div>
           </div>
+
+          @if (cardLayout.shape === 'hexagon') {
+            <svg class="card-outline"
+                 [attr.width]="cardWidthPx"
+                 [attr.height]="cardHeightPx">
+              <polygon [attr.points]="hexOutlinePoints"
+                       fill="none" stroke="#ccc" stroke-width="1"/>
+            </svg>
+          }
+
           <button mat-icon-button class="card-reshuffle-btn" title="Reshuffle layout"
             [class.spinning]="reshufflingCards.has(ci)"
             (click)="reshuffleCard(ci)"

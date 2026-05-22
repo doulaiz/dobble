@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
-import { Card, MM_TO_PX } from '../../utils/dobble.utils';
+import { Card, MM_TO_PX, cardWidthMm, cardHeightMm } from '../../utils/dobble.utils';
 
 interface DragState {
   ci: number;
@@ -118,12 +118,26 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     const layout = this.cardLayouts[ci]?.[ii];
     if (!layout) return;
     const minSize = 16;
-    const maxSize = Math.min(this.contentWidthPx, this.contentHeightPx);
+    const PR = this.placementRadiusPx;
+    const maxSize = PR !== null ? PR * 2 : Math.min(this.contentWidthPx, this.contentHeightPx);
     const newSize = Math.round(Math.max(minSize, Math.min(maxSize, layout.size * factor)));
-    const cx = layout.x + layout.size / 2;
-    const cy = layout.y + layout.size / 2;
-    const newX = Math.max(0, Math.min(this.contentWidthPx - newSize, Math.round(cx - newSize / 2)));
-    const newY = Math.max(0, Math.min(this.contentHeightPx - newSize, Math.round(cy - newSize / 2)));
+    const imgCx = layout.x + layout.size / 2;
+    const imgCy = layout.y + layout.size / 2;
+    let newX = Math.round(imgCx - newSize / 2);
+    let newY = Math.round(imgCy - newSize / 2);
+    const W = this.contentWidthPx, H = this.contentHeightPx;
+    if (PR !== null) {
+      const r = newSize / 2;
+      const maxR = Math.max(0, PR - r);
+      const dx = imgCx - W / 2, dy = imgCy - H / 2;
+      const dist = Math.hypot(dx, dy) || 0.001;
+      if (dist > maxR) { newX = Math.round(W / 2 + dx / dist * maxR - r); newY = Math.round(H / 2 + dy / dist * maxR - r); }
+      newX = Math.max(0, Math.min(W - newSize, newX));
+      newY = Math.max(0, Math.min(H - newSize, newY));
+    } else {
+      newX = Math.max(0, Math.min(W - newSize, newX));
+      newY = Math.max(0, Math.min(H - newSize, newY));
+    }
     this.cardLayouts = this.cardLayouts.map((layouts, c) =>
       c === ci ? layouts.map((l, i) => i === ii ? { ...l, size: newSize, x: newX, y: newY } : l) : layouts
     );
@@ -170,8 +184,24 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     const { ci, ii, offsetX, offsetY, contentEl, wrapperEl } = this.drag;
     const rect = contentEl.getBoundingClientRect();
     const size = this.cardLayouts[ci][ii].size;
-    const x = Math.round(Math.max(0, Math.min(this.contentWidthPx - size, clientX - rect.left - offsetX)));
-    const y = Math.round(Math.max(0, Math.min(this.contentHeightPx - size, clientY - rect.top - offsetY)));
+    const W = this.contentWidthPx, H = this.contentHeightPx;
+    let x = clientX - rect.left - offsetX;
+    let y = clientY - rect.top - offsetY;
+
+    const PR = this.placementRadiusPx;
+    if (PR !== null) {
+      const r = size / 2;
+      const maxR = Math.max(0, PR - r);
+      const dx = x + r - W / 2, dy = y + r - H / 2;
+      const dist = Math.hypot(dx, dy) || 0.001;
+      if (dist > maxR) { x = W / 2 + dx / dist * maxR - r; y = H / 2 + dy / dist * maxR - r; }
+      x = Math.max(0, Math.min(W - size, x));
+      y = Math.max(0, Math.min(H - size, y));
+    } else {
+      x = Math.max(0, Math.min(W - size, x));
+      y = Math.max(0, Math.min(H - size, y));
+    }
+    x = Math.round(x); y = Math.round(y);
     this.drag.x = x;
     this.drag.y = y;
     wrapperEl.style.left = x + 'px';
@@ -252,20 +282,42 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   private mm(v: number): number { return Math.round(v * MM_TO_PX); }
 
-  get cardWidthPx(): number { return this.mm(this.cardLayout.width); }
-  get cardHeightPx(): number { return this.mm(this.cardLayout.height); }
-  get paddingVPx(): number { return this.mm(this.cardLayout.marginTop); }
-  get paddingHPx(): number { return this.mm(this.cardLayout.marginLeft); }
+  private get shape() { return this.cardLayout.shape || 'rectangle'; }
+
+  get cardWidthPx(): number { return this.mm(cardWidthMm(this.cardLayout)); }
+  get cardHeightPx(): number { return this.mm(cardHeightMm(this.cardLayout)); }
+
+  // For rectangle: CSS padding creates the margin. For circle/hexagon: no CSS padding;
+  // the layout algorithm enforces the margin via the placement circle.
+  get paddingVPx(): number { return this.shape === 'rectangle' ? this.mm(this.cardLayout.marginTop) : 0; }
+  get paddingHPx(): number { return this.shape === 'rectangle' ? this.mm(this.cardLayout.marginLeft) : 0; }
   get contentWidthPx(): number { return this.cardWidthPx - 2 * this.paddingHPx; }
   get contentHeightPx(): number { return this.cardHeightPx - 2 * this.paddingVPx; }
 
+  /** Radius of the circle within which image centres must stay (null = rectangle). */
+  get placementRadiusPx(): number | null {
+    const margin = this.mm(this.cardLayout.marginTop);
+    if (this.shape === 'circle') return this.cardWidthPx / 2 - margin;
+    if (this.shape === 'hexagon') return this.cardWidthPx * Math.sqrt(3) / 4 - margin;
+    return null;
+  }
+
+  get hexOutlinePoints(): string {
+    const W = this.cardWidthPx, H = this.cardHeightPx;
+    return `${W*0.25},0 ${W*0.75},0 ${W},${H*0.5} ${W*0.75},${H} ${W*0.25},${H} 0,${H*0.5}`;
+  }
+
   get cardStyle(): Record<string, string> {
+    const hasBg = !!this.cardLayout.backgroundImage;
     const base: Record<string, string> = {
       width: `${this.cardWidthPx}px`,
       height: `${this.cardHeightPx}px`,
       padding: `${this.paddingVPx}px ${this.paddingHPx}px`,
     };
-    if (this.cardLayout.backgroundImage) {
+    if (!hasBg) base['backgroundColor'] = '#f0f0f0';
+    if (this.shape === 'circle') base['borderRadius'] = '50%';
+    if (this.shape === 'hexagon') base['clipPath'] = 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)';
+    if (hasBg) {
       base['backgroundImage'] = `url(${this.cardLayout.backgroundImage})`;
       base['backgroundSize'] = 'cover';
       base['backgroundPosition'] = 'center';
@@ -273,34 +325,73 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     return base;
   }
 
+  get contentStyle(): Record<string, string> {
+    if (!this.cardLayout.backgroundImage && this.shape === 'rectangle') {
+      return { background: 'white' };
+    }
+    return {};
+  }
+
+  get marginDiscStyle(): Record<string, string> | null {
+    if (this.shape === 'rectangle' || !!this.cardLayout.backgroundImage) return null;
+    const r = this.placementRadiusPx!;
+    const size = r * 2;
+    return {
+      position: 'absolute',
+      width: `${size}px`,
+      height: `${size}px`,
+      left: `${(this.cardWidthPx - size) / 2}px`,
+      top: `${(this.cardHeightPx - size) / 2}px`,
+      borderRadius: '50%',
+      background: 'white',
+      pointerEvents: 'none',
+    };
+  }
+
   private computeLayout(card: Card): ImgLayout[] {
     const n = card.length;
     const W = this.contentWidthPx;
     const H = this.contentHeightPx;
+    const PR = this.placementRadiusPx; // null for rectangle
+    const isRound = PR !== null;
+    const cx = W / 2, cy = H / 2;
 
-    const cols = Math.ceil(Math.sqrt(n));
-    const rows = Math.ceil(n / cols);
-    const spacingFactor = 1.1; // reduce max cell size to leave room for random placement and avoid tight packing
-    const baseSize = Math.min(W / cols, H / rows) / spacingFactor;
-    const minRadiusFactor = 0.7;
-    const variability = 0.6;
-    const radii = card.map(() => baseSize * (minRadiusFactor + Math.random() * variability) / 2);
+    // Base image size fitted to a grid over the available area
+    const area = isRound ? Math.PI * PR! * PR! : W * H;
+    const baseSize = Math.sqrt(area / n) / 1.2;
+    const radii = card.map(() => baseSize * (0.7 + Math.random() * 0.6) / 2);
 
-    const pos = card.map((_, i) => ({
-      x: radii[i] + Math.random() * (W - 2 * radii[i]),
-      y: radii[i] + Math.random() * (H - 2 * radii[i]),
-    }));
+    // Initial placement: random within the placement region
+    const pos = card.map((_, i) => {
+      if (isRound) {
+        const maxR = Math.max(0, PR! - radii[i]);
+        const r = maxR * Math.sqrt(Math.random());
+        const a = Math.random() * Math.PI * 2;
+        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+      }
+      return {
+        x: radii[i] + Math.random() * (W - 2 * radii[i]),
+        y: radii[i] + Math.random() * (H - 2 * radii[i]),
+      };
+    });
 
     const clamp = (i: number) => {
-      pos[i].x = Math.max(radii[i], Math.min(W - radii[i], pos[i].x));
-      pos[i].y = Math.max(radii[i], Math.min(H - radii[i], pos[i].y));
+      if (isRound) {
+        const dx = pos[i].x - cx, dy = pos[i].y - cy;
+        const dist = Math.hypot(dx, dy) || 0.001;
+        const maxR = Math.max(0, PR! - radii[i]);
+        if (dist > maxR) { pos[i].x = cx + dx / dist * maxR; pos[i].y = cy + dy / dist * maxR; }
+      } else {
+        pos[i].x = Math.max(radii[i], Math.min(W - radii[i], pos[i].x));
+        pos[i].y = Math.max(radii[i], Math.min(H - radii[i], pos[i].y));
+      }
     };
 
     const minGap = 1;
     const totalIter = 500;
 
     for (let iter = 0; iter < totalIter; iter++) {
-      const t = 1 - iter / totalIter;   // cooling 1 → 0
+      const t = 1 - iter / totalIter;
       const forces = pos.map(() => ({ x: 0, y: 0 }));
       let hasOverlap = false;
 
@@ -310,7 +401,6 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
           const dy = pos[i].y - pos[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
           const minDist = radii[i] + radii[j] + minGap;
-
           let push = 0;
           if (dist < minDist) {
             push = (minDist - dist) * 0.5;
@@ -320,7 +410,6 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
             if (dist < spreadRange)
               push = ((spreadRange - dist) / spreadRange) * t * minDist * 0.35;
           }
-
           if (push > 0) {
             const nx = dx / dist, ny = dy / dist;
             forces[i].x += nx * push; forces[i].y += ny * push;
@@ -331,12 +420,25 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
       if (t > 0.05) {
         for (let i = 0; i < n; i++) {
-          const wRange = radii[i] * (1 + 2 * t);
-          const strength = t * radii[i] * 0.7;
-          if (pos[i].x < wRange) forces[i].x += (1 - pos[i].x / wRange) * strength;
-          if (W - pos[i].x < wRange) forces[i].x -= (1 - (W - pos[i].x) / wRange) * strength;
-          if (pos[i].y < wRange) forces[i].y += (1 - pos[i].y / wRange) * strength;
-          if (H - pos[i].y < wRange) forces[i].y -= (1 - (H - pos[i].y) / wRange) * strength;
+          if (isRound) {
+            // Repel from circular boundary
+            const dx = pos[i].x - cx, dy = pos[i].y - cy;
+            const dist = Math.hypot(dx, dy) || 0.001;
+            const maxR = PR! - radii[i];
+            const wRange = maxR * (1 - 0.3 * (1 - t));
+            if (dist > wRange) {
+              const push = (dist - wRange) * t * 0.7;
+              forces[i].x -= (dx / dist) * push;
+              forces[i].y -= (dy / dist) * push;
+            }
+          } else {
+            const wRange = radii[i] * (1 + 2 * t);
+            const strength = t * radii[i] * 0.7;
+            if (pos[i].x < wRange) forces[i].x += (1 - pos[i].x / wRange) * strength;
+            if (W - pos[i].x < wRange) forces[i].x -= (1 - (W - pos[i].x) / wRange) * strength;
+            if (pos[i].y < wRange) forces[i].y += (1 - pos[i].y / wRange) * strength;
+            if (H - pos[i].y < wRange) forces[i].y -= (1 - (H - pos[i].y) / wRange) * strength;
+          }
         }
       }
 

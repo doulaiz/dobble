@@ -15,45 +15,67 @@
       <!-- Form -->
       <div class="settings-form">
 
-        <div class="field-row">
-          <label class="field-label">{{ t().width }}</label>
-          <div class="input-unit">
-            <input type="number" min="10" max="500" class="field-input"
-              [value]="layout.width"
-              (input)="update('width', +$any($event.target).value)" />
-            <span class="unit">mm</span>
+        @if (!isRound) {
+          <div class="field-row">
+            <label class="field-label">{{ t().width }}</label>
+            <div class="input-unit">
+              <input type="number" min="10" max="500" class="field-input"
+                [value]="layout.width"
+                (input)="update('width', +$any($event.target).value)" />
+              <span class="unit">mm</span>
+            </div>
           </div>
-        </div>
 
-        <div class="field-row">
-          <label class="field-label">{{ t().height }}</label>
-          <div class="input-unit">
-            <input type="number" min="10" max="500" class="field-input"
-              [value]="layout.height"
-              (input)="update('height', +$any($event.target).value)" />
-            <span class="unit">mm</span>
+          <div class="field-row">
+            <label class="field-label">{{ t().height }}</label>
+            <div class="input-unit">
+              <input type="number" min="10" max="500" class="field-input"
+                [value]="layout.height"
+                (input)="update('height', +$any($event.target).value)" />
+              <span class="unit">mm</span>
+            </div>
           </div>
-        </div>
 
-        <div class="field-row">
-          <label class="field-label">{{ t().marginVertical }}</label>
-          <div class="input-unit">
-            <input type="number" min="0" max="100" class="field-input"
-              [value]="layout.marginTop"
-              (input)="update('marginTop', +$any($event.target).value)" />
-            <span class="unit">mm</span>
+          <div class="field-row">
+            <label class="field-label">{{ t().marginVertical }}</label>
+            <div class="input-unit">
+              <input type="number" min="0" max="100" class="field-input"
+                [value]="layout.marginTop"
+                (input)="update('marginTop', +$any($event.target).value)" />
+              <span class="unit">mm</span>
+            </div>
           </div>
-        </div>
 
-        <div class="field-row">
-          <label class="field-label">{{ t().marginHorizontal }}</label>
-          <div class="input-unit">
-            <input type="number" min="0" max="100" class="field-input"
-              [value]="layout.marginLeft"
-              (input)="update('marginLeft', +$any($event.target).value)" />
-            <span class="unit">mm</span>
+          <div class="field-row">
+            <label class="field-label">{{ t().marginHorizontal }}</label>
+            <div class="input-unit">
+              <input type="number" min="0" max="100" class="field-input"
+                [value]="layout.marginLeft"
+                (input)="update('marginLeft', +$any($event.target).value)" />
+              <span class="unit">mm</span>
+            </div>
           </div>
-        </div>
+        } @else {
+          <div class="field-row">
+            <label class="field-label">{{ t().diameter }}</label>
+            <div class="input-unit">
+              <input type="number" min="10" max="500" class="field-input"
+                [value]="layout.diameter"
+                (input)="update('diameter', +$any($event.target).value)" />
+              <span class="unit">mm</span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label">{{ t().margin }}</label>
+            <div class="input-unit">
+              <input type="number" min="0" max="100" class="field-input"
+                [value]="layout.marginTop"
+                (input)="update('marginTop', +$any($event.target).value)" />
+              <span class="unit">mm</span>
+            </div>
+          </div>
+        }
 
         <div class="field-row field-row--bg">
           <label class="field-label">{{ t().background }}</label>
@@ -77,12 +99,16 @@
       <div class="settings-preview">
         <div class="preview-label-top">{{ t().preview }}</div>
         <div class="preview-card"
+          [ngStyle]="previewCardStyle"
           [style.width.px]="previewCardWidth"
           [style.height.px]="previewCardHeight"
           [style.background-image]="previewBgStyle"
           [style.background-size]="'cover'"
-          [style.background-position]="'center'">
+          [style.background-position]="'center'"
+          (click)="cycleShape()"
+          title="Click to change shape">
           <div class="preview-margin-area"
+            [ngStyle]="previewMarginStyle"
             [style.top.px]="previewMarginTop"
             [style.left.px]="previewMarginLeft"
             [style.right.px]="previewMarginLeft"
@@ -92,7 +118,14 @@
             }
           </div>
         </div>
-        <div class="preview-dims">{{ layout.width }} × {{ layout.height }} mm</div>
+        <div class="preview-shape-label">{{ shapeLabel }}</div>
+        <div class="preview-dims">
+          @if (!isRound) {
+            {{ layout.width }} × {{ layout.height }} mm
+          } @else {
+            ⌀ {{ layout.diameter }} mm
+          }
+        </div>
       </div>
 
     </div>

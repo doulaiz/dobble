@@ -98,6 +98,14 @@ h2 {
   animation: spin-once 0.4s ease-in-out;
 }
 
+.card-outline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
 .no-cards {
   padding: 20px;
   color: #888;

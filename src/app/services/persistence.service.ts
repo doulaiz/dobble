@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ImageState } from '../classes/image-state';
-import { CardLayout } from '../classes/card-layout';
+import { CardLayout, CardShape } from '../classes/card-layout';
 import { ImgLayout } from '../classes/img-layout';
 
 type Mode = 4 | 6 | 8;
@@ -26,8 +26,10 @@ interface StoredImageState {
 }
 
 interface StoredCardLayout {
+  shape?: CardShape;
   width: number;
   height: number;
+  diameter?: number;
   marginTop: number;
   marginLeft: number;
   backgroundImageRef?: string;  // SHA-256 key into the "files" store
@@ -183,7 +185,15 @@ export class PersistenceService {
         } else if (sc.backgroundImage) {
           backgroundImage = sc.backgroundImage;  // legacy v2: inline
         }
-        cardLayout = { width: sc.width, height: sc.height, marginTop: sc.marginTop, marginLeft: sc.marginLeft, backgroundImage };
+        cardLayout = {
+          shape: sc.shape ?? 'rectangle',
+          width: sc.width,
+          height: sc.height,
+          diameter: sc.diameter ?? Math.max(sc.width, sc.height),
+          marginTop: sc.marginTop,
+          marginLeft: sc.marginLeft,
+          backgroundImage,
+        };
       }
 
       return { mode: stored.mode, imageStates, cardIndices: stored.cardIndices, cards: stored.cards, cardLayout, cardLayouts: stored.cardLayouts };

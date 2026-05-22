@@ -30,6 +30,8 @@ export interface AppTranslations {
 
   width: string;
   height: string;
+  diameter: string;
+  margin: string;
   marginVertical: string;
   marginHorizontal: string;
   background: string;
@@ -84,6 +86,8 @@ const en: AppTranslations = {
 
   width: 'Width',
   height: 'Height',
+  diameter: 'Diameter',
+  margin: 'Margin',
   marginVertical: 'Margin vertical',
   marginHorizontal: 'Margin horizontal',
   background: 'Background',
@@ -212,6 +216,8 @@ const fr: AppTranslations = {
 
   width: 'Largeur',
   height: 'Hauteur',
+  diameter: 'Diamètre',
+  margin: 'Marge',
   marginVertical: 'Marge verticale',
   marginHorizontal: 'Marge horizontale',
   background: 'Arrière-plan',
@@ -340,6 +346,8 @@ const es: AppTranslations = {
 
   width: 'Ancho',
   height: 'Alto',
+  diameter: 'Diámetro',
+  margin: 'Margen',
   marginVertical: 'Margen vertical',
   marginHorizontal: 'Margen horizontal',
   background: 'Fondo',

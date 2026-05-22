@@ -3,8 +3,11 @@
     <h2>Generated Cards</h2>
     <div class="cards-grid">
       @for (card of cards; track $index; let ci = $index) {
-        <div class="card-wrapper">
-          <div class="card" [ngStyle]="cardStyle">
+        <div class="card-wrapper"
+             (mouseenter)="onCardMouseEnter(ci)"
+             (mouseleave)="onCardMouseLeave(ci)">
+          <div class="card" [ngStyle]="cardStyle"
+               [style.background-color]="cardLayout.backgroundImage ? null : (marginVisible[ci] ? '#f0f0f0' : 'white')">
             <div class="card-content"
               [ngStyle]="contentStyle"
               [style.width.px]="contentWidthPx"

@@ -99,7 +99,7 @@ export class ExportPanelComponent {
         zip.file(`${ci + 1}.png`, blob);
       }
       const content = await zip.generateAsync({ type: 'blob' });
-      triggerDownload(URL.createObjectURL(content), 'cards.zip');
+      triggerDownload(URL.createObjectURL(content), 'dobble_cards.zip');
     } catch (err) {
       console.error('[Dobble] PNG export failed:', err);
     } finally {
@@ -170,7 +170,7 @@ export class ExportPanelComponent {
         }
       }
 
-      doc.save('cards.pdf');
+      doc.save('dobble_cards.pdf');
     } catch (err) {
       console.error('[Dobble] PDF export failed:', err);
     } finally {

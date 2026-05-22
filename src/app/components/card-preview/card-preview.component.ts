@@ -45,6 +45,8 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   cardLayouts: ImgLayout[][] = [];
   reshufflingCards = new Set<number>();
+  marginVisible: boolean[] = [];
+  private marginTimers = new Map<number, ReturnType<typeof setTimeout>>();
   private drag: DragState | null = null;
   private pinch: PinchState | null = null;
 
@@ -67,6 +69,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     document.removeEventListener('mouseup', this.boundMouseUp);
     document.removeEventListener('touchmove', this.boundTouchMove);
     document.removeEventListener('touchend', this.boundTouchEnd);
+    this.marginTimers.forEach(t => clearTimeout(t));
   }
 
   reshuffleCard(index: number): void {
@@ -75,6 +78,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     updated[index] = this.computeLayout(this.cards[index]);
     this.cardLayouts = updated;
     setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+    this.flashMargin(index);
   }
 
   onReshuffleAnimEnd(index: number): void {
@@ -96,6 +100,8 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
         this.cardLayouts = this.cards.map(card => this.computeLayout(card));
         if (this.cards.length > 0) setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
       }
+      this.marginVisible = new Array(this.cards.length).fill(false);
+      if (this.cards.length > 0) setTimeout(() => this.flashAllMargins());
     } else if (changes['cardLayout'] && this.cards.length) {
       // Card dimensions changed: recompute positions in the new pixel space.
       this.cardLayouts = this.cards.map(card => this.computeLayout(card));
@@ -314,7 +320,6 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       height: `${this.cardHeightPx}px`,
       padding: `${this.paddingVPx}px ${this.paddingHPx}px`,
     };
-    if (!hasBg) base['backgroundColor'] = '#f0f0f0';
     if (this.shape === 'circle') base['borderRadius'] = '50%';
     if (this.shape === 'hexagon') base['clipPath'] = 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)';
     if (hasBg) {
@@ -362,6 +367,33 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       background: 'white',
       pointerEvents: 'none',
     };
+  }
+
+  private flashMargin(ci: number, duration = 1600): void {
+    const existing = this.marginTimers.get(ci);
+    if (existing) clearTimeout(existing);
+    this.marginVisible[ci] = true;
+    this.marginTimers.set(ci, setTimeout(() => this.ngZone.run(() => {
+      this.marginVisible[ci] = false;
+      this.marginTimers.delete(ci);
+    }), duration));
+  }
+
+  private flashAllMargins(): void {
+    for (let i = 0; i < this.cards.length; i++) this.flashMargin(i);
+  }
+
+  onCardMouseEnter(ci: number): void {
+    const existing = this.marginTimers.get(ci);
+    if (existing) { clearTimeout(existing); this.marginTimers.delete(ci); }
+    this.marginVisible[ci] = true;
+  }
+
+  onCardMouseLeave(ci: number): void {
+    this.marginTimers.set(ci, setTimeout(() => this.ngZone.run(() => {
+      this.marginVisible[ci] = false;
+      this.marginTimers.delete(ci);
+    }), 500));
   }
 
   private computeLayout(card: Card): ImgLayout[] {

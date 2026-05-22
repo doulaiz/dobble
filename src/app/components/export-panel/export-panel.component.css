@@ -2,19 +2,48 @@
   padding: 20px;
 }
 
-h2 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #444;
-  margin: 0 0 16px;
-}
-
 .export-buttons {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
+}
+
+.export-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .btn-export {
   gap: 6px;
+  flex-shrink: 0;
+}
+
+.export-buttons > .btn-export {
+  align-self: flex-start;
+}
+
+.print-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+}
+
+.print-hint a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.print-hint a:hover {
+  text-decoration: underline;
+}
+
+.print-hint-disclaimer {
+  font-style: italic;
+  color: #999;
+  font-size: 11px;
 }

@@ -37,11 +37,12 @@ export interface AppTranslations {
   remove: string;
   preview: string;
 
-  exportTitle: string;
   exportPng: string;
   exportPdf: string;
   exportingPng: string;
   exportingPdf: string;
+  printHintLabel: string;
+  printHintDisclaimer: string;
 
   editImage: string;
   noImageSelected: string;
@@ -90,11 +91,12 @@ const en: AppTranslations = {
   remove: 'Remove',
   preview: 'Preview',
 
-  exportTitle: 'Export',
   exportPng: 'Export Images PNG',
   exportPdf: 'Export Fullpage PDF',
   exportingPng: 'Exporting…',
   exportingPdf: 'Generating PDF…',
+  printHintLabel: 'Cards can be printed at:',
+  printHintDisclaimer: '(Not affiliated or sponsored)',
 
   editImage: 'Edit Image',
   noImageSelected: 'No image selected',
@@ -217,11 +219,12 @@ const fr: AppTranslations = {
   remove: 'Supprimer',
   preview: 'Aperçu',
 
-  exportTitle: 'Exporter',
   exportPng: 'Exporter en PNG',
   exportPdf: 'Exporter PDF pleine page',
   exportingPng: 'Exportation…',
   exportingPdf: 'Génération du PDF…',
+  printHintLabel: 'Les cartes peuvent être imprimées sur :',
+  printHintDisclaimer: '(Aucune affiliation ni partenariat)',
 
   editImage: "Modifier l'image",
   noImageSelected: 'Aucune image sélectionnée',
@@ -344,11 +347,12 @@ const es: AppTranslations = {
   remove: 'Eliminar',
   preview: 'Vista previa',
 
-  exportTitle: 'Exportar',
   exportPng: 'Exportar imágenes PNG',
   exportPdf: 'Exportar PDF de página completa',
   exportingPng: 'Exportando…',
   exportingPdf: 'Generando PDF…',
+  printHintLabel: 'Las cartas se pueden imprimir en:',
+  printHintDisclaimer: '(Sin afiliación ni patrocinio)',
 
   editImage: 'Editar imagen',
   noImageSelected: 'Ninguna imagen seleccionada',

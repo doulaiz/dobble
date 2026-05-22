@@ -1,16 +1,24 @@
 <div class="export-panel">
-  <h2>{{ t().exportTitle }}</h2>
-
   <div class="export-buttons">
-    <button
-      mat-flat-button
-      color="primary"
-      class="btn-export"
-      [disabled]="!cards.length || exportingPng || exportingPdf"
-      (click)="exportImages()">
-      <lucide-icon name="download" [size]="16" />
-      {{ exportingPng ? t().exportingPng : t().exportPng }}
-    </button>
+
+    <div class="export-row">
+      <button
+        mat-flat-button
+        color="primary"
+        class="btn-export"
+        [disabled]="!cards.length || exportingPng || exportingPdf"
+        (click)="exportImages()">
+        <lucide-icon name="download" [size]="16" />
+        {{ exportingPng ? t().exportingPng : t().exportPng }}
+      </button>
+
+      <div class="print-hint">
+        <span class="print-hint-label">{{ t().printHintLabel }}</span>
+        <a href="https://www.printerstudio.com/unique-ideas/blank-playing-cards.html" target="_blank" rel="noopener noreferrer">PrinterStudio</a>
+        <a href="https://www.boardgamesmaker.com/customized/custom-game-cards.html" target="_blank" rel="noopener noreferrer">BoardGamesMaker</a>
+        <span class="print-hint-disclaimer">{{ t().printHintDisclaimer }}</span>
+      </div>
+    </div>
 
     <button
       mat-flat-button
@@ -21,5 +29,6 @@
       <lucide-icon name="download" [size]="16" />
       {{ exportingPdf ? t().exportingPdf : t().exportPdf }}
     </button>
+
   </div>
 </div>

@@ -12,7 +12,7 @@ import { LanguageSwitcherComponent } from '../../components/language-switcher/la
 import { ImageState } from '../../classes/image-state';
 import { CardLayout } from '../../classes/card-layout';
 import { ImgLayout } from '../../classes/img-layout';
-import { Card, requiredImagesForMode } from '../../utils/dobble.utils';
+import { Card, Mode, requiredImagesForMode } from '../../utils/dobble.utils';
 import { version } from '../../../../package.json';
 
 @Component({
@@ -34,8 +34,8 @@ import { version } from '../../../../package.json';
 export class HomeComponent implements OnInit {
   readonly appVersion = version;
 
-  mode: 4 | 6 | 8 = 4;
-  requiredImages = 13;
+  mode: Mode = 6;
+  requiredImages = requiredImagesForMode(6);
   imagesReady = false;
   images: string[] = [];
   cards: Card[] = [];
@@ -121,7 +121,7 @@ export class HomeComponent implements OnInit {
     this.saveState({ mode: this.mode, imageStates: [], cardIndices: [], cardLayout: this.cardLayout, cardLayouts: [] });
   }
 
-  onModeChange(mode: 4 | 6 | 8) {
+  onModeChange(mode: Mode) {
     this.mode = mode;
     this.requiredImages = requiredImagesForMode(mode);
     this.imagesReady = false;

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { MatRadioModule } from '@angular/material/radio';
 import { LanguageService } from '../../services/language.service';
+import { Mode } from '../../utils/dobble.utils';
 
 @Component({
   selector: 'app-mode-selector',
@@ -10,14 +11,14 @@ import { LanguageService } from '../../services/language.service';
   styleUrls: ['./mode-selector.component.css']
 })
 export class ModeSelectorComponent {
-  @Input() set initialMode(mode: 4 | 6 | 8) { this.selected = mode; }
-  @Output() modeChange = new EventEmitter<4 | 6 | 8>();
+  @Input() set initialMode(mode: Mode) { this.selected = mode; }
+  @Output() modeChange = new EventEmitter<Mode>();
 
-  selected: 4 | 6 | 8 = 4;
+  selected: Mode = 6;
 
   readonly t = inject(LanguageService).t;
 
-  selectMode(mode: 4 | 6 | 8) {
+  selectMode(mode: Mode) {
     this.selected = mode;
     this.modeChange.emit(mode);
   }

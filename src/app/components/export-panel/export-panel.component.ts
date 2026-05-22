@@ -6,6 +6,8 @@ import { ImgLayout } from '../../classes/img-layout';
 import { Card, MM_TO_PX } from '../../utils/dobble.utils';
 import { LanguageService } from '../../services/language.service';
 
+const EXPORT_PX_PER_MM = 400 / 25.4;
+
 @Component({
   selector: 'app-export-panel',
   standalone: true,
@@ -18,77 +20,131 @@ export class ExportPanelComponent {
   @Input() cardLayouts: ImgLayout[][] = [];
   @Input() cardLayout: CardLayout = new CardLayout();
 
-  exporting = false;
+  exportingPng = false;
+  exportingPdf = false;
 
   readonly t = inject(LanguageService).t;
 
+  private async renderCard(ci: number): Promise<string> {
+    const scale = EXPORT_PX_PER_MM / MM_TO_PX;
+    const px = (mm: number) => Math.round(mm * EXPORT_PX_PER_MM);
+
+    const cardW = px(this.cardLayout.width);
+    const cardH = px(this.cardLayout.height);
+    const padH = px(this.cardLayout.marginLeft);
+    const padV = px(this.cardLayout.marginTop);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = cardW;
+    canvas.height = cardH;
+    const ctx = canvas.getContext('2d')!;
+
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, cardW, cardH);
+
+    if (this.cardLayout.backgroundImage) {
+      const bg = await loadImage(this.cardLayout.backgroundImage);
+      const s = Math.max(cardW / bg.naturalWidth, cardH / bg.naturalHeight);
+      ctx.drawImage(bg,
+        (cardW - bg.naturalWidth * s) / 2,
+        (cardH - bg.naturalHeight * s) / 2,
+        bg.naturalWidth * s,
+        bg.naturalHeight * s
+      );
+    }
+
+    const layout = this.cardLayouts[ci] ?? [];
+    for (let ii = 0; ii < this.cards[ci].length; ii++) {
+      const l = layout[ii];
+      if (!l) continue;
+      const img = await loadImage(this.cards[ci][ii]);
+      const size = l.size * scale;
+      const cx = padH + l.x * scale + size / 2;
+      const cy = padV + l.y * scale + size / 2;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(l.rotate * Math.PI / 180);
+      ctx.beginPath();
+      ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(img, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+
+    return canvas.toDataURL('image/png');
+  }
+
   async exportImages() {
     if (!this.cards.length) return;
-    this.exporting = true;
+    this.exportingPng = true;
     try {
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
-
-      const EXPORT_PX_PER_MM = 400 / 25.4;
-      const layoutScale = EXPORT_PX_PER_MM / MM_TO_PX;
-      const mm = (v: number) => Math.round(v * EXPORT_PX_PER_MM);
-      const cardW = mm(this.cardLayout.width);
-      const cardH = mm(this.cardLayout.height);
-      const padH = mm(this.cardLayout.marginLeft);
-      const padV = mm(this.cardLayout.marginTop);
-
       for (let ci = 0; ci < this.cards.length; ci++) {
-        const canvas = document.createElement('canvas');
-        canvas.width = cardW;
-        canvas.height = cardH;
-        const ctx = canvas.getContext('2d')!;
-
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, cardW, cardH);
-
-        if (this.cardLayout.backgroundImage) {
-          const bg = await loadImage(this.cardLayout.backgroundImage);
-          const scale = Math.max(cardW / bg.naturalWidth, cardH / bg.naturalHeight);
-          const drawW = bg.naturalWidth * scale;
-          const drawH = bg.naturalHeight * scale;
-          const drawX = (cardW - drawW) / 2;
-          const drawY = (cardH - drawH) / 2;
-          ctx.drawImage(bg, drawX, drawY, drawW, drawH);
-        }
-
-        const layout = this.cardLayouts[ci] ?? [];
-        for (let ii = 0; ii < this.cards[ci].length; ii++) {
-          const l = layout[ii];
-          if (!l) continue;
-          const img = await loadImage(this.cards[ci][ii]);
-          const size = l.size * layoutScale;
-          const cx = padH + l.x * layoutScale + size / 2;
-          const cy = padV + l.y * layoutScale + size / 2;
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.rotate(l.rotate * Math.PI / 180);
-          ctx.beginPath();
-          ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
-          ctx.clip();
-          ctx.drawImage(img, -size / 2, -size / 2, size, size);
-          ctx.restore();
-        }
-
-        const blob = await canvasToBlob(canvas);
+        const dataUrl = await this.renderCard(ci);
+        const blob = await dataUrlToBlob(dataUrl);
         zip.file(`${ci + 1}.png`, blob);
       }
-
       const content = await zip.generateAsync({ type: 'blob' });
-      const url = URL.createObjectURL(content);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cards.zip';
-      a.click();
-      URL.revokeObjectURL(url);
+      triggerDownload(URL.createObjectURL(content), 'cards.zip');
     } catch (err) {
-      console.error('[Dobble] Export failed:', err);
+      console.error('[Dobble] PNG export failed:', err);
     } finally {
-      this.exporting = false;
+      this.exportingPng = false;
+    }
+  }
+
+  async exportPdf() {
+    if (!this.cards.length) return;
+    this.exportingPdf = true;
+    try {
+      const { jsPDF } = await import('jspdf');
+
+      // A4 dimensions and layout constants (mm)
+      const PAGE_W = 210;
+      const PAGE_H = 297;
+      const MARGIN = 10;
+      const GAP = 5;
+
+      const cardW = this.cardLayout.width;
+      const cardH = this.cardLayout.height;
+
+      const availW = PAGE_W - 2 * MARGIN;
+      const availH = PAGE_H - 2 * MARGIN;
+
+      const cols = Math.max(1, Math.floor((availW + GAP) / (cardW + GAP)));
+      const rows = Math.max(1, Math.floor((availH + GAP) / (cardH + GAP)));
+      const perPage = cols * rows;
+
+      // Center the card grid on the page
+      const gridW = cols * cardW + (cols - 1) * GAP;
+      const gridH = rows * cardH + (rows - 1) * GAP;
+      const offsetX = MARGIN + (availW - gridW) / 2;
+      const offsetY = MARGIN + (availH - gridH) / 2;
+
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      for (let ci = 0; ci < this.cards.length; ci++) {
+        const posInPage = ci % perPage;
+
+        if (posInPage === 0 && ci > 0) {
+          doc.addPage();
+        }
+
+        const col = posInPage % cols;
+        const row = Math.floor(posInPage / cols);
+        const x = offsetX + col * (cardW + GAP);
+        const y = offsetY + row * (cardH + GAP);
+
+        const dataUrl = await this.renderCard(ci);
+        doc.addImage(dataUrl, 'PNG', x, y, cardW, cardH);
+      }
+
+      doc.save('cards.pdf');
+    } catch (err) {
+      console.error('[Dobble] PDF export failed:', err);
+    } finally {
+      this.exportingPdf = false;
     }
   }
 }
@@ -102,8 +158,14 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
-  return new Promise((resolve, reject) =>
-    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Failed to render card canvas')), 'image/png')
-  );
+function dataUrlToBlob(dataUrl: string): Promise<Blob> {
+  return fetch(dataUrl).then(r => r.blob());
+}
+
+function triggerDownload(url: string, filename: string) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }

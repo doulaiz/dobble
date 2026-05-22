@@ -37,8 +37,11 @@ export interface AppTranslations {
   remove: string;
   preview: string;
 
-  exportImages: string;
-  exporting: string;
+  exportTitle: string;
+  exportPng: string;
+  exportPdf: string;
+  exportingPng: string;
+  exportingPdf: string;
 
   editImage: string;
   noImageSelected: string;
@@ -87,8 +90,11 @@ const en: AppTranslations = {
   remove: 'Remove',
   preview: 'Preview',
 
-  exportImages: 'Export Images',
-  exporting: 'Exporting…',
+  exportTitle: 'Export',
+  exportPng: 'Export Images PNG',
+  exportPdf: 'Export Fullpage PDF',
+  exportingPng: 'Exporting…',
+  exportingPdf: 'Generating PDF…',
 
   editImage: 'Edit Image',
   noImageSelected: 'No image selected',
@@ -211,8 +217,11 @@ const fr: AppTranslations = {
   remove: 'Supprimer',
   preview: 'Aperçu',
 
-  exportImages: 'Exporter les images',
-  exporting: 'Exportation…',
+  exportTitle: 'Exporter',
+  exportPng: 'Exporter en PNG',
+  exportPdf: 'Exporter PDF pleine page',
+  exportingPng: 'Exportation…',
+  exportingPdf: 'Génération du PDF…',
 
   editImage: "Modifier l'image",
   noImageSelected: 'Aucune image sélectionnée',
@@ -335,8 +344,11 @@ const es: AppTranslations = {
   remove: 'Eliminar',
   preview: 'Vista previa',
 
-  exportImages: 'Exportar imágenes',
-  exporting: 'Exportando…',
+  exportTitle: 'Exportar',
+  exportPng: 'Exportar imágenes PNG',
+  exportPdf: 'Exportar PDF de página completa',
+  exportingPng: 'Exportando…',
+  exportingPdf: 'Generando PDF…',
 
   editImage: 'Editar imagen',
   noImageSelected: 'Ninguna imagen seleccionada',

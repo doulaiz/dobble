@@ -1,13 +1,25 @@
 <div class="export-panel">
-  <h2>{{ t().exportImages }}</h2>
+  <h2>{{ t().exportTitle }}</h2>
 
-  <button
-    mat-flat-button
-    color="primary"
-    class="btn-export"
-    [disabled]="!cards || cards.length === 0 || exporting"
-    (click)="exportImages()">
-    <lucide-icon name="download" [size]="16" />
-    {{ exporting ? t().exporting : t().exportImages }}
-  </button>
+  <div class="export-buttons">
+    <button
+      mat-flat-button
+      color="primary"
+      class="btn-export"
+      [disabled]="!cards.length || exportingPng || exportingPdf"
+      (click)="exportImages()">
+      <lucide-icon name="download" [size]="16" />
+      {{ exportingPng ? t().exportingPng : t().exportPng }}
+    </button>
+
+    <button
+      mat-flat-button
+      color="primary"
+      class="btn-export"
+      [disabled]="!cards.length || exportingPng || exportingPdf"
+      (click)="exportPdf()">
+      <lucide-icon name="download" [size]="16" />
+      {{ exportingPdf ? t().exportingPdf : t().exportPdf }}
+    </button>
+  </div>
 </div>

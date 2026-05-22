@@ -9,6 +9,12 @@ h2 {
   margin: 0 0 16px;
 }
 
+.export-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .btn-export {
   gap: 6px;
 }

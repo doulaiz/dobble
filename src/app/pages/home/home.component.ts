@@ -146,6 +146,15 @@ export class HomeComponent implements OnInit {
     this.saveState({ mode: this.mode, imageStates, cardIndices: this.cardIndices, cardLayout: this.cardLayout, cardLayouts: this.savedCardLayouts });
   }
 
+  onImagesReordered(imageStates: ImageState[]) {
+    this.savedImageStates = imageStates;
+    this.images = imageStates.map(s => s.croppedImage);
+    if (this.cardIndices.length) {
+      this.cards = this.cardIndices.map(indices => indices.map(i => this.images[i]));
+    }
+    this.saveState({ mode: this.mode, imageStates, cardIndices: this.cardIndices, cardLayout: this.cardLayout, cardLayouts: this.savedCardLayouts });
+  }
+
   onLayoutChange(layout: CardLayout) {
     this.cardLayout = layout;
     this.saveState({ mode: this.mode, imageStates: this.savedImageStates, cardIndices: this.cardIndices, cardLayout: layout, cardLayouts: this.savedCardLayouts });

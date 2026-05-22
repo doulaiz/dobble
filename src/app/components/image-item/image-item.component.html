@@ -1,7 +1,7 @@
-<div class="image-item-container">
-  <div class="preview" (click)="onClick($event)">
+<div class="image-item-container" [class.reorder-mode]="reorderMode">
+  <div class="preview">
     @if (imageState && imageState.croppedImage) {
-      <img class="circle-preview" [src]="imageState.croppedImage" />
+      <img class="circle-preview" [src]="imageState.croppedImage" draggable="false" />
     } @else {
       <div class="no-image">
         <lucide-icon name="plus" [size]="32" />

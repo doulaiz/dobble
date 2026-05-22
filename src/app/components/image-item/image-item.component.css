@@ -1,6 +1,9 @@
 .image-item-container {
   width: 100%;
   height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .preview {
@@ -12,6 +15,10 @@
   cursor: pointer;
 }
 
+.reorder-mode .preview {
+  cursor: grabbing;
+}
+
 .circle-preview {
   width: 100%;
   height: 100%;
@@ -19,6 +26,7 @@
   object-fit: cover;
   border: 3px solid #e8e8e8;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
 }
 
 .no-image {

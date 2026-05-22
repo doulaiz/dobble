@@ -61,7 +61,8 @@
     [requiredImages]="requiredImages"
     [initialImageStates]="savedImageStates"
     (imagesReady)="onImagesReady($event)"
-    (imageStatesChange)="onImageStatesChange($event)">
+    (imageStatesChange)="onImageStatesChange($event)"
+    (imagesReordered)="onImagesReordered($event)">
   </app-images-wrapper>
 
   <hr />

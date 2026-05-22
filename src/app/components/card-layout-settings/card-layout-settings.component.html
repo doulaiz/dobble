@@ -39,7 +39,7 @@
           <div class="field-row">
             <label class="field-label">{{ t().marginVertical }}</label>
             <div class="input-unit">
-              <input type="number" min="0" max="100" class="field-input"
+              <input type="number" min="0" [max]="maxTopMargin" class="field-input"
                 [value]="layout.marginTop"
                 (input)="update('marginTop', +$any($event.target).value)" />
               <span class="unit">mm</span>
@@ -49,7 +49,7 @@
           <div class="field-row">
             <label class="field-label">{{ t().marginHorizontal }}</label>
             <div class="input-unit">
-              <input type="number" min="0" max="100" class="field-input"
+              <input type="number" min="0" [max]="maxLeftMargin" class="field-input"
                 [value]="layout.marginLeft"
                 (input)="update('marginLeft', +$any($event.target).value)" />
               <span class="unit">mm</span>
@@ -69,7 +69,7 @@
           <div class="field-row">
             <label class="field-label">{{ t().margin }}</label>
             <div class="input-unit">
-              <input type="number" min="0" max="100" class="field-input"
+              <input type="number" min="0" [max]="maxTopMargin" class="field-input"
                 [value]="layout.marginTop"
                 (input)="update('marginTop', +$any($event.target).value)" />
               <span class="unit">mm</span>

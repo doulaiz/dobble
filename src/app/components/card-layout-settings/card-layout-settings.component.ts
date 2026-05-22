@@ -111,24 +111,45 @@ export class CardLayoutSettingsComponent {
   cycleShape() {
     const next = SHAPES[(SHAPES.indexOf(this.shape) + 1) % SHAPES.length];
     const d = Math.round((this.layout.width + this.layout.height) / 2);
-    const margin = this.layout.marginTop;
-    if (next === 'rectangle') {
-      this.layout = { ...this.layout, shape: next };
-    } else {
-      this.layout = { ...this.layout, shape: next, diameter: this.layout.diameter || d, marginTop: margin };
-    }
+    let newLayout: CardLayout = next === 'rectangle'
+      ? { ...this.layout, shape: next }
+      : { ...this.layout, shape: next, diameter: this.layout.diameter || d };
+    newLayout.marginTop = Math.min(newLayout.marginTop, this.computeMaxTopMargin(newLayout));
+    this.layout = newLayout;
     this.layoutChange.emit(this.layout);
   }
 
   update(field: keyof CardLayout, value: number | string) {
+    const next: CardLayout = { ...this.layout };
     if (field === 'width' || field === 'height' || field === 'diameter') {
-      value = Math.max(10, Math.min(500, +value || 10));
-    } else if (field === 'marginTop' || field === 'marginLeft') {
-      value = Math.max(0, Math.min(100, +value || 0));
+      (next as any)[field] = Math.max(10, Math.min(500, +value || 10));
+      next.marginTop = Math.min(next.marginTop, this.computeMaxTopMargin(next));
+      next.marginLeft = Math.min(next.marginLeft, this.computeMaxLeftMargin(next));
+    } else if (field === 'marginTop') {
+      next.marginTop = Math.max(0, Math.min(this.computeMaxTopMargin(next), +value || 0));
+    } else if (field === 'marginLeft') {
+      next.marginLeft = Math.max(0, Math.min(this.computeMaxLeftMargin(next), +value || 0));
+    } else {
+      (next as any)[field] = value;
     }
-    this.layout = { ...this.layout, [field]: value };
+    this.layout = next;
     this.layoutChange.emit(this.layout);
   }
+
+  private computeMaxTopMargin(layout: CardLayout): number {
+    const d = layout.diameter || 88;
+    if ((layout.shape || 'rectangle') === 'rectangle') return Math.floor((layout.height - 1) / 2);
+    if (layout.shape === 'circle') return Math.floor((d - 1) / 2);
+    // hexagon: inradius = d × √3/4; margin must stay below it
+    return Math.max(0, Math.floor(d * Math.sqrt(3) / 4 - 0.5));
+  }
+
+  private computeMaxLeftMargin(layout: CardLayout): number {
+    return Math.floor((layout.width - 1) / 2);
+  }
+
+  get maxTopMargin(): number { return this.computeMaxTopMargin(this.layout); }
+  get maxLeftMargin(): number { return this.computeMaxLeftMargin(this.layout); }
 
   async browseBackground() {
     const result = await pickFile('image/png,image/jpeg,image/webp', this.ngZone);

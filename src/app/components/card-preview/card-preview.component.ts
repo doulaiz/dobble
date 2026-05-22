@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { LucideAngularModule } from 'lucide-angular';
@@ -47,6 +47,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   reshufflingCards = new Set<number>();
   marginVisible: boolean[] = [];
   private marginTimers = new Map<number, ReturnType<typeof setTimeout>>();
+  private destroyed = false;
   private drag: DragState | null = null;
   private pinch: PinchState | null = null;
 
@@ -55,7 +56,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   private readonly boundTouchMove = this.onTouchMove.bind(this);
   private readonly boundTouchEnd = this.onTouchEnd.bind(this);
 
-  constructor(private ngZone: NgZone) {
+  constructor(private ngZone: NgZone, private cdr: ChangeDetectorRef) {
     ngZone.runOutsideAngular(() => {
       document.addEventListener('mousemove', this.boundMouseMove);
       document.addEventListener('mouseup', this.boundMouseUp);
@@ -65,6 +66,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
     document.removeEventListener('touchmove', this.boundTouchMove);
@@ -373,10 +375,12 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     const existing = this.marginTimers.get(ci);
     if (existing) clearTimeout(existing);
     this.marginVisible[ci] = true;
-    this.marginTimers.set(ci, setTimeout(() => this.ngZone.run(() => {
+    this.marginTimers.set(ci, setTimeout(() => {
+      if (this.destroyed) return;
       this.marginVisible[ci] = false;
       this.marginTimers.delete(ci);
-    }), duration));
+      this.cdr.detectChanges();
+    }, duration));
   }
 
   private flashAllMargins(): void {
@@ -384,16 +388,11 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   }
 
   onCardMouseEnter(ci: number): void {
-    const existing = this.marginTimers.get(ci);
-    if (existing) { clearTimeout(existing); this.marginTimers.delete(ci); }
-    this.marginVisible[ci] = true;
+    this.flashMargin(ci);
   }
 
   onCardMouseLeave(ci: number): void {
-    this.marginTimers.set(ci, setTimeout(() => this.ngZone.run(() => {
-      this.marginVisible[ci] = false;
-      this.marginTimers.delete(ci);
-    }), 500));
+    if (this.marginVisible[ci]) this.flashMargin(ci, 400);
   }
 
   private computeLayout(card: Card): ImgLayout[] {

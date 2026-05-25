@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ng *)",
+      "Bash(ls /home/rdeleuze/Development/perso/dobble 2>/dev/null || ls \\\\\\\\\\\\\\\\wsl.localhost\\\\\\\\Ubuntu\\\\\\\\home\\\\\\\\rdeleuze\\\\\\\\Development\\\\\\\\perso\\\\\\\\dobble 2>/dev/null || echo \"path not found\")",
+      "Read(///wsl.localhost/Ubuntu/home/rdeleuze/Development/perso/**)"
+    ],
+    "additionalDirectories": [
+      "\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\components\\card-preview",
+      "\\\\wsl.localhost\\Ubuntu\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\components\\card-preview",
+      "\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\components\\card-layout-settings",
+      "\\\\wsl.localhost\\Ubuntu\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\components\\card-layout-settings",
+      "\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\pages\\home",
+      "\\\\wsl.localhost\\Ubuntu\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\pages\\home",
+      "\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\utils",
+      "\\\\wsl.localhost\\Ubuntu\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\utils",
+      "\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\services",
+      "\\\\wsl.localhost\\Ubuntu\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\services",
+      "\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\components\\mode-selector",
+      "\\\\wsl.localhost\\Ubuntu\\home\\rdeleuze\\Development\\perso\\dobble\\src\\app\\components\\mode-selector"
+    ]
+  }
+}

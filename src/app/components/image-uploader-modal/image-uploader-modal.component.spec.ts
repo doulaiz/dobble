@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ImageUploaderModalComponent } from './image-item-modal.component';
+import { ImageUploaderModalComponent } from './image-uploader-modal.component';
 
 describe('ImageUploaderModalComponent', () => {
    let component: ImageUploaderModalComponent;

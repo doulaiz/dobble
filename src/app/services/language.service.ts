@@ -43,6 +43,8 @@ export interface AppTranslations {
   exportPdf: string;
   exportingPng: string;
   exportingPdf: string;
+  exportInstructions: string;
+  exportingInstructions: string;
   printHintLabel: string;
   printHintDisclaimer: string;
 
@@ -99,6 +101,8 @@ const en: AppTranslations = {
   exportPdf: 'Export Fullpage PDF',
   exportingPng: 'Exporting…',
   exportingPdf: 'Generating PDF…',
+  exportInstructions: 'Export Instruction Cards',
+  exportingInstructions: 'Exporting…',
   printHintLabel: 'Cards can be printed at:',
   printHintDisclaimer: '(Not affiliated or sponsored)',
 
@@ -229,6 +233,8 @@ const fr: AppTranslations = {
   exportPdf: 'Exporter PDF pleine page',
   exportingPng: 'Exportation…',
   exportingPdf: 'Génération du PDF…',
+  exportInstructions: 'Exporter les cartes d\'instructions',
+  exportingInstructions: 'Exportation…',
   printHintLabel: 'Les cartes peuvent être imprimées sur :',
   printHintDisclaimer: '(Aucune affiliation ni partenariat)',
 
@@ -359,6 +365,8 @@ const es: AppTranslations = {
   exportPdf: 'Exportar PDF de página completa',
   exportingPng: 'Exportando…',
   exportingPdf: 'Generando PDF…',
+  exportInstructions: 'Exportar cartas de instrucciones',
+  exportingInstructions: 'Exportando…',
   printHintLabel: 'Las cartas se pueden imprimir en:',
   printHintDisclaimer: '(Sin afiliación ni patrocinio)',
 

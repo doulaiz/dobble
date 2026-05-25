@@ -423,6 +423,8 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       }
     }
 
+    const gap = 4; // minimum pixels of space between image edges
+
     const clamp = (i: number) => {
       if (isRound) {
         const dx = pos[i].x - cx, dy = pos[i].y - cy;
@@ -447,7 +449,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
             const dx = pos[i].x - pos[j].x;
             const dy = pos[i].y - pos[j].y;
             const dist = Math.hypot(dx, dy) || 0.001;
-            const need = radii[i] + radii[j];
+            const need = radii[i] + radii[j] + gap;
             if (dist < need) {
               const push = (need - dist) * 0.5;
               const nx = dx / dist, ny = dy / dist;
@@ -463,7 +465,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       // Check if residual overlaps exceed tolerance
       for (let i = 0; i < n; i++)
         for (let j = i + 1; j < n; j++)
-          if (Math.hypot(pos[i].x - pos[j].x, pos[i].y - pos[j].y) < radii[i] + radii[j] - 0.5)
+          if (Math.hypot(pos[i].x - pos[j].x, pos[i].y - pos[j].y) < radii[i] + radii[j] + gap - 0.5)
             return false;
       return true;
     };

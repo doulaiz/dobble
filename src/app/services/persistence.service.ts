@@ -49,6 +49,8 @@ const STATE_KEY = 'dobble_state';
 @Injectable({ providedIn: 'root' })
 export class PersistenceService {
   private dbPromise: Promise<IDBDatabase> | null = null;
+  // Serializes concurrent save calls so they never interleave
+  private saveQueue: Promise<void> = Promise.resolve();
 
   private openDB(): Promise<IDBDatabase> {
     if (this.dbPromise) return this.dbPromise;
@@ -111,7 +113,13 @@ export class PersistenceService {
     });
   }
 
-  async save(state: PersistedState): Promise<void> {
+  // Public entry point: enqueues the save so concurrent calls never interleave
+  save(state: PersistedState): Promise<void> {
+    this.saveQueue = this.saveQueue.then(() => this._save(state));
+    return this.saveQueue;
+  }
+
+  private async _save(state: PersistedState): Promise<void> {
     const db = await this.openDB();
 
     // Build stored image states: deduplicate raw images into the "files" store.
@@ -138,13 +146,14 @@ export class PersistenceService {
       }
     }
 
-    // Remove files no longer referenced by any image slot or the card background.
     const activeRefs = new Set<string>([
       ...storedImageStates.map(s => s.fileRef).filter((r): r is string => r != null),
       ...(storedCardLayout?.backgroundImageRef ? [storedCardLayout.backgroundImageRef] : []),
     ]);
-    await this.deleteOrphanedFiles(db, activeRefs);
 
+    // Write the state record FIRST so it is always consistent with the files store
+    // A crash after this point leaves unreferenced blobs (wasted space)
+    // but the state record is always valid and load() will never produce broken images.
     const stored: StoredState = { ...state, imageStates: storedImageStates, cardLayout: storedCardLayout };
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(STATE_STORE, 'readwrite');
@@ -152,6 +161,9 @@ export class PersistenceService {
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
     });
+
+    // Delete orphaned files only after the state is durably committed.
+    await this.deleteOrphanedFiles(db, activeRefs);
   }
 
   async load(): Promise<PersistedState | null> {

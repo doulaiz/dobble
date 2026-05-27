@@ -50,6 +50,8 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   private destroyed = false;
   private drag: DragState | null = null;
   private pinch: PinchState | null = null;
+  // Incremented each time a new batch layout is started; used to cancel stale runs.
+  private layoutGen = 0;
 
   private readonly boundMouseMove = this.onMouseMove.bind(this);
   private readonly boundMouseUp = this.onMouseUp.bind(this);
@@ -67,6 +69,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed = true;
+    this.layoutGen++; // cancel any in-progress layout computation
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
     document.removeEventListener('touchmove', this.boundTouchMove);
@@ -99,16 +102,40 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       ) {
         this.cardLayouts = restored;
       } else {
-        this.cardLayouts = this.cards.map(card => this.computeLayout(card));
-        if (this.cards.length > 0) setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+        // Pre-fill with empty slot arrays so card containers render immediately
+        // while the async layout computation fills them in one card per frame
+        this.cardLayouts = this.cards.map(() => []);
+        this.scheduleLayoutComputation(this.cards);
       }
       this.marginVisible = new Array(this.cards.length).fill(false);
       if (this.cards.length > 0) setTimeout(() => this.flashAllMargins());
     } else if (changes['cardLayout'] && this.cards.length) {
       // Card dimensions changed: recompute positions in the new pixel space.
-      this.cardLayouts = this.cards.map(card => this.computeLayout(card));
-      setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+      this.cardLayouts = this.cards.map(() => []);
+      this.scheduleLayoutComputation(this.cards);
     }
+  }
+
+  // Computes layouts one card per animation frame so the main thread is never
+  // blocked for more than a single card's simulation (~few ms) at a time
+  // Runs outside Angular zone to avoid triggering change detection on every frame;
+  // re-enters the zone once with the completed result.
+  private scheduleLayoutComputation(cards: Card[]): void {
+    const gen = ++this.layoutGen;
+    this.ngZone.runOutsideAngular(async () => {
+      const layouts: ImgLayout[][] = [];
+      for (const card of cards) {
+        if (gen !== this.layoutGen) return; // cancelled by a newer call or destroy
+        layouts.push(this.computeLayout(card));
+        await new Promise<void>(r => requestAnimationFrame(() => r()));
+      }
+      if (gen !== this.layoutGen) return;
+      this.ngZone.run(() => {
+        this.cardLayouts = layouts;
+        this.cdr.detectChanges();
+        setTimeout(() => this.cardLayoutsChange.emit(this.cardLayouts));
+      });
+    });
   }
 
   onSymbolMouseDown(event: MouseEvent, ci: number, ii: number): void {

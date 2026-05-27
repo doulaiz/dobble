@@ -44,6 +44,7 @@ export class HomeComponent implements OnInit {
   savedImageStates: ImageState[] = [];
   showResetConfirm = false;
   saveError = false;
+  generateError = false;
   cardLayout: CardLayout = new CardLayout();
   private imageChangedByUser = false;
 
@@ -172,6 +173,7 @@ export class HomeComponent implements OnInit {
 
   generateCards() {
     if (!this.imagesReady) return;
+    this.generateError = false;
 
     const cardIndices: number[][] = [];
     const order = this.mode - 1;
@@ -195,25 +197,13 @@ export class HomeComponent implements OnInit {
     }
 
     if (!this.validateCards(cardIndices)) {
-      console.error("error with the card generation");
-      // Debug: Print cards and their contents
-      console.log('[Dobble Debug] Generated Cards:');
-      console.log('Total cards:', this.cards.length);
-      this.cardIndices.forEach((indices, cardNum) => {
-        console.log(`Card ${cardNum}:`, {
-          imageIndices: indices,
-          imageCount: indices.length,
-          imagesPreview: indices.map(i => `Image[${i}]`).join(', ')
-        });
-      });
-      console.log('Full card structure:', { cardIndices: this.cardIndices, cards: this.cards });
+      this.generateError = true;
+      return;
     }
 
     this.cardIndices = cardIndices;
     this.savedCardLayouts = [];
     this.cards = cardIndices.map(indices => indices.map(i => this.images[i]));
-
-
 
     this.saveState({ mode: this.mode, imageStates: this.savedImageStates, cardIndices, cardLayout: this.cardLayout, cardLayouts: [] });
   }

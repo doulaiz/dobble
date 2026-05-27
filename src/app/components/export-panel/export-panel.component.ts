@@ -23,6 +23,7 @@ export class ExportPanelComponent {
   exportingPng = false;
   exportingPdf = false;
   exportingInstructions = false;
+  exportError: string | null = null;
 
   readonly t = inject(LanguageService).t;
 
@@ -85,12 +86,17 @@ export class ExportPanelComponent {
     ctx.lineWidth = Math.max(1, Math.round(EXPORT_PX_PER_MM * 0.3));
     ctx.stroke();
 
-    return canvas.toDataURL('image/png');
+    const dataUrl = canvas.toDataURL('image/png');
+    // Release the pixel buffer so GC can reclaim memory before the next card
+    canvas.width = 0;
+    canvas.height = 0;
+    return dataUrl;
   }
 
   async exportImages() {
     if (!this.cards.length) return;
     this.exportingPng = true;
+    this.exportError = null;
     try {
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
@@ -103,6 +109,7 @@ export class ExportPanelComponent {
       triggerDownload(URL.createObjectURL(content), 'dobble_cards.zip');
     } catch (err) {
       console.error('[Dobble] PNG export failed:', err);
+      this.exportError = this.t().exportFailed;
     } finally {
       this.exportingPng = false;
     }
@@ -111,6 +118,7 @@ export class ExportPanelComponent {
   async exportPdf() {
     if (!this.cards.length) return;
     this.exportingPdf = true;
+    this.exportError = null;
     try {
       const { jsPDF } = await import('jspdf');
 
@@ -174,6 +182,7 @@ export class ExportPanelComponent {
       doc.save('dobble_cards.pdf');
     } catch (err) {
       console.error('[Dobble] PDF export failed:', err);
+      this.exportError = this.t().exportFailed;
     } finally {
       this.exportingPdf = false;
     }
@@ -182,6 +191,7 @@ export class ExportPanelComponent {
   async exportInstructionCards() {
     const t = this.t();
     this.exportingInstructions = true;
+    this.exportError = null;
     try {
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
@@ -196,6 +206,7 @@ export class ExportPanelComponent {
       triggerDownload(URL.createObjectURL(content), 'dobble_instruction_cards.zip');
     } catch (err) {
       console.error('[Dobble] Instruction cards export failed:', err);
+      this.exportError = this.t().exportFailed;
     } finally {
       this.exportingInstructions = false;
     }
@@ -356,8 +367,12 @@ function triggerDownload(url: string, filename: string) {
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  // Defer revocation so the browser has time to start the download before the
+  // URL is invalidated. Immediate revocation silently fails in Firefox
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {

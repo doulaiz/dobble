@@ -24,6 +24,7 @@ export interface AppTranslations {
   yesDelete: string;
   generateCards: (n: number) => string;
   reshuffleCards: string;
+  cardGenerationError: string;
   footer: string;
 
   imagesPerCard: string;
@@ -45,6 +46,7 @@ export interface AppTranslations {
   exportingPdf: string;
   exportInstructions: string;
   exportingInstructions: string;
+  exportFailed: string;
   printHintLabel: string;
   printHintDisclaimer: string;
 
@@ -82,6 +84,7 @@ const en: AppTranslations = {
   yesDelete: 'Yes, delete',
   generateCards: (n) => `Generate the ${n} cards`,
   reshuffleCards: 'Reshuffle all the cards',
+  cardGenerationError: 'Card generation failed — the mathematical layout could not be validated.',
   footer: 'Fair use license © 2026 R. Deleuze',
 
   imagesPerCard: 'Number of images per card',
@@ -103,6 +106,7 @@ const en: AppTranslations = {
   exportingPdf: 'Generating PDF…',
   exportInstructions: 'Export Instruction Cards',
   exportingInstructions: 'Exporting…',
+  exportFailed: 'Export failed. Please try again.',
   printHintLabel: 'Cards can be printed at:',
   printHintDisclaimer: '(Not affiliated or sponsored)',
 
@@ -214,6 +218,7 @@ const fr: AppTranslations = {
   yesDelete: 'Oui, supprimer',
   generateCards: (n) => `Générer les ${n} cartes`,
   reshuffleCards: 'Rebattre toutes les cartes',
+  cardGenerationError: "La génération des cartes a échoué — la disposition mathématique n'a pas pu être validée.",
   footer: "Fair use license © 2026 R. Deleuze",
 
   imagesPerCard: "Nombre d'images par carte",
@@ -235,6 +240,7 @@ const fr: AppTranslations = {
   exportingPdf: 'Génération du PDF…',
   exportInstructions: 'Exporter les cartes d\'instructions',
   exportingInstructions: 'Exportation…',
+  exportFailed: "L'export a échoué. Veuillez réessayer.",
   printHintLabel: 'Les cartes peuvent être imprimées sur :',
   printHintDisclaimer: '(Aucune affiliation ni partenariat)',
 
@@ -346,6 +352,7 @@ const es: AppTranslations = {
   yesDelete: 'Sí, eliminar',
   generateCards: (n) => `Generar las ${n} cartas`,
   reshuffleCards: 'Mezclar todas las cartas',
+  cardGenerationError: 'La generación de cartas falló — el diseño matemático no pudo validarse.',
   footer: 'Fair use license © 2026 R. Deleuze',
 
   imagesPerCard: 'Número de imágenes por carta',
@@ -367,6 +374,7 @@ const es: AppTranslations = {
   exportingPdf: 'Generando PDF…',
   exportInstructions: 'Exportar cartas de instrucciones',
   exportingInstructions: 'Exportando…',
+  exportFailed: 'La exportación falló. Por favor, inténtelo de nuevo.',
   printHintLabel: 'Las cartas se pueden imprimir en:',
   printHintDisclaimer: '(Sin afiliación ni patrocinio)',
 

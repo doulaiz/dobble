@@ -121,16 +121,20 @@ export class CardLayoutSettingsComponent {
 
   update(field: keyof CardLayout, value: number | string) {
     const next: CardLayout = { ...this.layout };
+    const clampDim = (v: number) => Math.max(10, Math.min(500, v || 10));
     if (field === 'width' || field === 'height' || field === 'diameter') {
-      (next as any)[field] = Math.max(10, Math.min(500, +value || 10));
+      // All three are number fields — TypeScript knows next[field]: number here.
+      next[field] = clampDim(+value);
       next.marginTop = Math.min(next.marginTop, this.computeMaxTopMargin(next));
       next.marginLeft = Math.min(next.marginLeft, this.computeMaxLeftMargin(next));
     } else if (field === 'marginTop') {
       next.marginTop = Math.max(0, Math.min(this.computeMaxTopMargin(next), +value || 0));
     } else if (field === 'marginLeft') {
       next.marginLeft = Math.max(0, Math.min(this.computeMaxLeftMargin(next), +value || 0));
-    } else {
-      (next as any)[field] = value;
+    } else if (field === 'shape') {
+      next.shape = value as CardShape;
+    } else if (field === 'backgroundImage') {
+      next.backgroundImage = value as string;
     }
     this.layout = next;
     this.layoutChange.emit(this.layout);

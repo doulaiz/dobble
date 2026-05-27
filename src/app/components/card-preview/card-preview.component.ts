@@ -52,6 +52,8 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
   private pinch: PinchState | null = null;
   // Incremented each time a new batch layout is started; used to cancel stale runs.
   private layoutGen = 0;
+  // True while the passive:false touchmove listener is attached
+  private touchMoveActive = false;
 
   private readonly boundMouseMove = this.onMouseMove.bind(this);
   private readonly boundMouseUp = this.onMouseUp.bind(this);
@@ -62,7 +64,6 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     ngZone.runOutsideAngular(() => {
       document.addEventListener('mousemove', this.boundMouseMove);
       document.addEventListener('mouseup', this.boundMouseUp);
-      document.addEventListener('touchmove', this.boundTouchMove, { passive: false });
       document.addEventListener('touchend', this.boundTouchEnd);
     });
   }
@@ -72,7 +73,7 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     this.layoutGen++; // cancel any in-progress layout computation
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
-    document.removeEventListener('touchmove', this.boundTouchMove);
+    if (this.touchMoveActive) document.removeEventListener('touchmove', this.boundTouchMove);
     document.removeEventListener('touchend', this.boundTouchEnd);
     this.marginTimers.forEach(t => clearTimeout(t));
   }
@@ -194,6 +195,12 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       const centerX = (layout?.x ?? 0) + size / 2;
       const centerY = (layout?.y ?? 0) + size / 2;
       this.pinch = { ci, ii, initialDist: dist, initialSize: size, currentSize: size, currentX: layout?.x ?? 0, currentY: layout?.y ?? 0, centerX, centerY, wrapperEl: event.currentTarget as HTMLElement };
+      if (!this.touchMoveActive) {
+        this.ngZone.runOutsideAngular(() =>
+          document.addEventListener('touchmove', this.boundTouchMove, { passive: false })
+        );
+        this.touchMoveActive = true;
+      }
       return;
     }
     this.startDrag(event.touches[0].clientX, event.touches[0].clientY, ci, ii, event.currentTarget as HTMLElement);
@@ -212,6 +219,12 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
       x: layout.x, y: layout.y,
     };
     wrapperEl.style.zIndex = '100';
+    if (!this.touchMoveActive) {
+      this.ngZone.runOutsideAngular(() =>
+        document.addEventListener('touchmove', this.boundTouchMove, { passive: false })
+      );
+      this.touchMoveActive = true;
+    }
   }
 
   private moveDrag(clientX: number, clientY: number): void {
@@ -250,6 +263,10 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     wrapperEl.style.zIndex = '';
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
+    if (!this.pinch && this.touchMoveActive) {
+      document.removeEventListener('touchmove', this.boundTouchMove);
+      this.touchMoveActive = false;
+    }
     this.ngZone.run(() => {
       this.cardLayouts = this.cardLayouts.map((layouts, c) =>
         c === ci ? layouts.map((l, i) => i === ii ? { ...l, x, y } : l) : layouts
@@ -303,6 +320,10 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
         wrapperEl.style.left = '';
         wrapperEl.style.top = '';
         this.pinch = null;
+        if (!this.drag && this.touchMoveActive) {
+          document.removeEventListener('touchmove', this.boundTouchMove);
+          this.touchMoveActive = false;
+        }
         this.ngZone.run(() => {
           this.cardLayouts = this.cardLayouts.map((layouts, c) =>
             c === ci ? layouts.map((l, i) => i === ii ? { ...l, size: currentSize, x: currentX, y: currentY } : l) : layouts

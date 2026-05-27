@@ -87,6 +87,13 @@
     </div>
   </div>
 
+  @if (generateError) {
+    <div class="save-error-banner" role="alert">
+      <span>{{ t().cardGenerationError }}</span>
+      <button class="save-error-dismiss" (click)="generateError = false" aria-label="Dismiss">✕</button>
+    </div>
+  }
+
   @if (cards.length) {
     <hr />
 

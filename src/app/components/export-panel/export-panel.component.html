@@ -1,4 +1,10 @@
 <div class="export-panel">
+  @if (exportError) {
+    <div class="save-error-banner" role="alert">
+      <span>{{ exportError }}</span>
+      <button class="save-error-dismiss" (click)="exportError = null" aria-label="Dismiss">✕</button>
+    </div>
+  }
   <div class="export-buttons">
 
     <button

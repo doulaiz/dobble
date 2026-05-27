@@ -443,6 +443,10 @@ export class CardPreviewComponent implements OnChanges, OnDestroy {
     if (this.marginVisible[ci]) this.flashMargin(ci, 400);
   }
 
+  isLoading(ci: number): boolean {
+    return (this.cardLayouts[ci]?.length ?? 0) === 0;
+  }
+
   private computeLayout(card: Card): ImgLayout[] {
     const n = card.length;
     const W = this.contentWidthPx;

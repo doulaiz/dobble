@@ -8,6 +8,8 @@
              (mouseleave)="onCardMouseLeave(ci)">
           <div class="card" [ngStyle]="cardStyle"
                [style.background-color]="cardLayout.backgroundImage ? null : (marginVisible[ci] ? '#f0f0f0' : 'white')">
+            <div class="card-loading-overlay"
+                 [class.card-loading-overlay--visible]="isLoading(ci)"></div>
             <div class="card-content"
               [ngStyle]="contentStyle"
               [style.width.px]="contentWidthPx"
